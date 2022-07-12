@@ -3,58 +3,12 @@ import {TouchableOpacity, Text, View} from 'react-native';
 import {formatNumber} from './libs/Utils';
 import {styles} from './styles';
 
-/**
- *
- * @param {Object} propsC
- * @param {Object} propsC.local
- * @param {Boolean} propsC.isFa
- * @param {String|Number} propsC.today
- * @param {Number} propsC.offDay
- * @param {Array<Number|String>} propsC.selectedDays
- * @param {"calendar"|"range"|"one"|"multi"} propsC.type
- * @param {(item:String)=>void} propsC.onPress
- *
- * @param {Object} props
- * @param {Object} props.item
- * @param {String} props.item.day
- * @param {Boolean} props.item.occasion
- * @returns {React.ReactNode}
- */
-const DayItemView = (
-  {local, isFa, selectedDays, type, today, offDay, onPress},
-  {item, index},
-) => {
-  const isOffDay = (index + 1) % offDay === 0;
-  const isToday = item === today;
-  const {isSelected, isSelectedFirst, isSelectedLast, isSelectedMiddle} =
-    statusSelected(item.day, type, selectedDays);
-
-  return (
-    <_DayItemView
-      key={`${item}:${index}`}
-      item={item}
-      type={type}
-      local={local}
-      isToday={isToday}
-      isOffDay={isOffDay}
-      isFa={isFa}
-      isSelected={isSelected}
-      isSelectedFirst={isSelectedFirst}
-      isSelectedLast={isSelectedLast}
-      isSelectedMiddle={isSelectedMiddle}
-      onPress={onPress}
-    />
-  );
-};
-
-const _DayItemView = React.memo(
+const DayItemView = React.memo(
   ({
     item,
     type,
     local,
-    isToday,
-    isOffDay,
-    isFa,
+    isPersian,
     isSelected,
     isSelectedFirst,
     isSelectedLast,
@@ -67,21 +21,23 @@ const _DayItemView = React.memo(
         onPress={onPress?.bind(null, item)}
         style={[
           styles.dayBase,
-          isToday && styles.todayBase,
+          item.isToday && styles.todayBase,
           isSelected && styles.selectDayBase,
-          isSelectedFirst && styles.selectStartDayBase,
-          isSelectedLast && styles.selectEndDayBase,
+          ((!isPersian && isSelectedFirst) || (isPersian && isSelectedLast)) &&
+            styles.selectStartDayBase,
+          ((!isPersian && isSelectedLast) || (isPersian && isSelectedFirst)) &&
+            styles.selectEndDayBase,
           isSelectedMiddle && styles.selectMiddleDayBase,
           type != 'range' && styles.selectDayMargin,
         ]}>
         <Text
           style={[
             styles.dayTitle,
-            isToday && styles.todayTitle,
+            item.isToday && styles.todayTitle,
             isSelected && styles.selectDayTitle,
             isSelectedMiddle && styles.selectMiddleDayBase,
-            isOffDay && styles.offDayTitle,
-            isFa && styles.textL,
+            item.isOffDay && styles.offDayTitle,
+            isPersian && styles.textL,
           ]}>
           {formatNumber(item.day, local)}
         </Text>
@@ -89,8 +45,8 @@ const _DayItemView = React.memo(
         <Text
           style={[
             styles.dayOccasion,
-            isOffDay && styles.offDayTitle,
-            item.occasion && styles.dayOccasionShow,
+            item.isOffDay && styles.offDayTitle,
+            item.description && styles.dayOccasionShow,
           ]}>
           ☼
         </Text>
@@ -104,7 +60,7 @@ const _DayItemView = React.memo(
       pP.local !== nP.local ||
       pP.isToday !== nP.isToday ||
       pP.isOffDay !== nP.isOffDay ||
-      pP.isFa !== nP.isFa ||
+      pP.isPersian !== nP.isPersian ||
       pP.isSelected !== nP.isSelected ||
       pP.isSelectedFirst !== nP.isSelectedFirst ||
       pP.isSelectedLast !== nP.isSelectedLast ||
@@ -113,36 +69,5 @@ const _DayItemView = React.memo(
     );
   },
 );
-
-/**
- * @param {String} item
- * @param {"calendar"|"range"|"one"|"multi"} type
- * @param {Array<Number|String>} selectedDays
- */
-function statusSelected(item, type, selectedDays) {
-  const indexSelected = selectedDays.indexOf(item);
-  let isSelected = indexSelected >= 0;
-  let isSelectedFirst = false;
-  let isSelectedLast = false;
-  let isSelectedMiddle = false;
-
-  if (type === 'range' && selectedDays.length >= 2) {
-    const isInRange =
-      item > selectedDays[0] && item < selectedDays[selectedDays.length - 1];
-    isSelectedFirst = indexSelected === 0;
-    isSelectedLast = selectedDays.length === indexSelected + 1;
-    isSelectedMiddle =
-      (indexSelected > 0 || isInRange) && isSelectedLast === false;
-
-    isSelected = isSelected || isInRange;
-  }
-
-  return {
-    isSelected,
-    isSelectedFirst,
-    isSelectedLast,
-    isSelectedMiddle,
-  };
-}
 
 export default DayItemView;

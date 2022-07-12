@@ -1,7 +1,8 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {FlatList, Text, View} from 'react-native';
 import {PERSIAN} from './libs/Locales';
 import {styles} from './styles';
+import WeekItemView from './WeekItemView';
 
 /**
  *
@@ -9,23 +10,18 @@ import {styles} from './styles';
  * @param {Object} props.local
  * @param {Array<String>} props.local.nameDaysOfWeek
  * @param {Number} props.local.dayOffOfWeek
+ * @param {Object} props.isPersian
  * @returns {React.ReactNode}
  */
-const WeekView = ({local = PERSIAN, size}) => {
+const WeekView = ({local = PERSIAN, isPersian}) => {
   return (
-    <View style={styles.weekBase}>
-      {local.nameDaysOfWeek?.map((name, index) => (
-        <Text
-          key={index}
-          style={[
-            styles.weekTitle,
-            local.dayOffOfWeek === index && styles.offDayTitle,
-            size && styles.offDayTitle,
-          ]}>
-          {name}
-        </Text>
-      ))}
-    </View>
+    <FlatList
+      data={local.nameDaysOfWeek}
+      renderItem={WeekItemView.bind(null, {dayOffOfWeek: local.dayOffOfWeek})}
+      numColumns={7}
+      keyExtractor={(item, index) => `${item}:${index}`}
+      columnWrapperStyle={isPersian && {flexDirection: 'row-reverse'}}
+    />
   );
 };
 
