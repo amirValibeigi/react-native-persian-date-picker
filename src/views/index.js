@@ -1,18 +1,17 @@
-import React from 'react';
-import {FlatList, Text, TouchableOpacity, View} from 'react-native';
-import DayItemView from './DayItemView';
-import {PERSIAN} from './libs/Locales';
-import {styles} from './styles';
-import WeekView from './WeekView';
-import moment from 'jalali-moment';
+import React from "react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import DayItemView from "./items/DayItemView";
+import { PERSIAN } from "../libs/Locales";
+import { styles } from "../styles";
+import WeekView from "./WeekView";
+import moment from "jalali-moment";
 import {
   fillDays,
   formatNumber,
   getSelectedDays,
-  getSplitDate,
-  isMonth,
-} from './libs/Utils';
-import {FORMAT_ENGLISH, FORMAT_PERSIAN} from './libs/Format';
+  mixDisabledDate,
+} from "../libs/Utils";
+import { FORMAT_ENGLISH, FORMAT_PERSIAN } from "../libs/Format";
 
 /**
  * @typedef PersianDatePickerProps
@@ -37,8 +36,8 @@ export default class PersianDatePicker extends React.Component {
   static defaultProps = {
     local: PERSIAN,
     date: moment(),
-    size: 'f',
-    type: 'calendar',
+    size: "f",
+    type: "calendar",
   };
 
   /**
@@ -64,11 +63,12 @@ export default class PersianDatePicker extends React.Component {
     this.state.days = fillDays(
       props.local,
       this.state.userDate,
+      mixDisabledDate(props),
       props.days,
-      props.inputDateFormat,
+      props.inputDateFormat
     );
 
-    this.#isPersian = props.local.type == 'fa';
+    this.#isPersian = props.local.type == "fa";
 
     this._onPressNextMonth = this.#onPressChangeMonth.bind(this, true);
     this._onPressPreviousMonth = this.#onPressChangeMonth.bind(this, false);
@@ -78,43 +78,44 @@ export default class PersianDatePicker extends React.Component {
     const {
       local = PERSIAN,
       inputDateFormat,
-      size = 'f',
-      type = 'calendar',
+      size = "f",
+      type = "calendar",
     } = this.props;
     const isPersian = this.#isPersian;
 
-    const {userDate, days, selectedDays} = this.state;
+    const { userDate, days, selectedDays } = this.state;
     const [year, month] = userDate
       .format(isPersian ? FORMAT_PERSIAN : FORMAT_ENGLISH)
-      .split('-')
-      .map(v => Number(v));
+      .split("-")
+      .map((v) => Number(v));
 
     const selectedDaysThisMonth = getSelectedDays(
       selectedDays,
       userDate,
       type,
       isPersian,
-      inputDateFormat,
+      inputDateFormat
     );
 
     return (
       <View
         style={[
           styles.container,
-          size === 's' && styles.containerS,
-          size === 'm' && styles.containerM,
-        ]}>
+          size === "s" && styles.containerS,
+          size === "m" && styles.containerM,
+        ]}
+      >
         <View style={styles.yearBase}>
           <TouchableOpacity onPress={this._onPressNextMonth}>
-            <Text style={styles.arrow}>{'<'}</Text>
+            <Text style={styles.arrow}>{"<"}</Text>
           </TouchableOpacity>
 
           <Text style={styles.yearMonthTitle}>
-            {local.nameMonth[month - 1] + '\t\t\t' + formatNumber(year, local)}
+            {local.nameMonth[month - 1] + "\t\t\t" + formatNumber(year, local)}
           </Text>
 
           <TouchableOpacity onPress={this._onPressPreviousMonth}>
-            <Text style={styles.arrow}>{'>'}</Text>
+            <Text style={styles.arrow}>{">"}</Text>
           </TouchableOpacity>
         </View>
 
@@ -132,26 +133,26 @@ export default class PersianDatePicker extends React.Component {
           })}
           numColumns={7}
           keyExtractor={(item, index) => `${item}:${index}`}
-          columnWrapperStyle={isPersian && {flexDirection: 'row-reverse'}}
+          columnWrapperStyle={isPersian && { flexDirection: "row-reverse" }}
         />
       </View>
     );
   }
 
-  #onPressDay = item => {
-    const {type, outputDateFormat, onPressDay, local} = this.props;
-    const {userDate} = this.state;
-    const {day} = item;
+  #onPressDay = (item) => {
+    const { type, outputDateFormat, onPressDay, local } = this.props;
+    const { userDate } = this.state;
+    const { day } = item;
     let date = moment(userDate);
 
-    date = (local.type == 'fa' ? date.jDate(day) : date.date(day)).format(
-      'YYYY-MM-DD',
+    date = (local.type == "fa" ? date.jDate(day) : date.date(day)).format(
+      "YYYY-MM-DD"
     );
 
     let selectedDays =
-      type === 'one' || type === 'calendar' ? [] : [...this.state.selectedDays];
+      type === "one" || type === "calendar" ? [] : [...this.state.selectedDays];
 
-    if (type === 'range') {
+    if (type === "range") {
       let iItem;
       if ((iItem = selectedDays.indexOf(date)) >= 0) {
         selectedDays.splice(iItem, 1);
@@ -165,26 +166,32 @@ export default class PersianDatePicker extends React.Component {
     } else {
       selectedDays.push(date);
     }
-    this.setState({selectedDays});
+    this.setState({ selectedDays });
 
     onPressDay?.(
-      selectedDays.map(tDate => moment(tDate).format(outputDateFormat)),
+      selectedDays.map((tDate) => moment(tDate).format(outputDateFormat))
     );
   };
 
-  #onPressChangeMonth = isNext => {
+  #onPressChangeMonth = (isNext) => {
     const userDate = moment(this.state.userDate);
 
     if ((this.#isPersian && isNext) || (!this.#isPersian && !isNext)) {
-      userDate.add('month', 1);
+      userDate.add("month", 1);
     } else {
-      userDate.add('month', -1);
+      userDate.add("month", -1);
     }
 
-    const {local, days, inputDateFormat} = this.props;
-    const _days = fillDays(local, userDate, days, inputDateFormat);
+    const { local, days, inputDateFormat } = this.props;
+    const _days = fillDays(
+      local,
+      userDate,
+      mixDisabledDate(this.props),
+      days,
+      inputDateFormat
+    );
 
-    this.setState({userDate, days: _days});
+    this.setState({ userDate, days: _days });
   };
 }
 
@@ -206,10 +213,10 @@ export default class PersianDatePicker extends React.Component {
  * @returns {React.ReactNode}
  */
 const renderDayItemView = (
-  {local, isPersian, selectedDays, type, onPress},
-  {item, index},
+  { local, isPersian, selectedDays, type, onPress },
+  { item, index }
 ) => {
-  const {isSelected, isSelectedFirst, isSelectedLast, isSelectedMiddle} =
+  const { isSelected, isSelectedFirst, isSelectedLast, isSelectedMiddle } =
     statusSelected(item.day, index, type, selectedDays);
 
   return (
@@ -239,7 +246,7 @@ function statusSelected(item, index, type, selectedDays) {
   let isSelectedLast = false;
   let isSelectedMiddle = false;
 
-  if (type === 'range' && selectedDays.length >= 2) {
+  if (type === "range" && selectedDays.length >= 2) {
     const _item = item ?? (index > 30 ? 90 : 0);
     const isInRange =
       _item > selectedDays[0] && _item < selectedDays[selectedDays.length - 1];
