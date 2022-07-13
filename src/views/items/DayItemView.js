@@ -3,13 +3,13 @@ import { TouchableOpacity, Text } from "react-native";
 import { formatNumber } from "../../libs/Utils";
 import { styles } from "../../styles";
 /**
- * @type {React.NamedExoticComponent<{item:{isDisabled:Boolean,isToday:Boolean,isOffDay:Boolean,day:String|Number,description:String|Boolean},type:"calendar"|"range"|"one"|"multi",local:Object,isPersian:Boolean,isSelected:Boolean,isSelectedFirst:Boolean,isSelectedLast:Boolean,isSelectedMiddle:Boolean,onPress:()=>void}>}
+ * @type {React.NamedExoticComponent<{item:{isDisabled:Boolean,isToday:Boolean,isOffDay:Boolean,day:String|Number,description:String|Boolean},type:"calendar"|"range"|"one"|"multi",locale:Object,isPersian:Boolean,isSelected:Boolean,isSelectedFirst:Boolean,isSelectedLast:Boolean,isSelectedMiddle:Boolean,onPress:()=>void}>}
  */
 const DayItemView = React.memo(
   ({
     item,
     type,
-    local,
+    locale,
     isPersian,
     isSelected,
     isSelectedFirst,
@@ -44,7 +44,7 @@ const DayItemView = React.memo(
             isPersian && styles.textL,
           ]}
         >
-          {formatNumber(item.day, local)}
+          {formatNumber(item.day, locale)}
         </Text>
 
         <Text

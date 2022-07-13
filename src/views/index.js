@@ -8,36 +8,43 @@ import moment from "jalali-moment";
 import {
   fillDays,
   formatNumber,
-  getSelectedDays,
+  getNumberSelectedDays,
   mixDisabledDate,
+  safeParseDate,
 } from "../libs/Utils";
 import { FORMAT_ENGLISH, FORMAT_PERSIAN } from "../libs/Format";
+import DescriptionView from "./DescriptionView";
+import YearMonthView from "./YearMonthView";
 
 /**
  * @typedef PersianDatePickerProps
- * @property {Object} local
+ * @property {Object} locale
  * @property {String|Number} date
  * @property {String} inputDateFormat
  * @property {String} outputDateFormat
  * @property {Array<{date:String|Number,isOffDay:Boolean,description:String}>} days
  * @property {"f"|"m"|"s"} size
+ * @property {Boolean} [showDescription=true] only calendar and one
  * @property {"calendar"|"range"|"one"|"multi"} type
+ * @property {React.FC<{days:Object}>} renderDescription
+ * @property {React.FC<{onPress:Function}>} renderNextMonth
+ * @property {React.FC<{onPress:Function}>} renderPreviousMonth
  * @property {(day:{day:String|Number,isOffDay:Boolean,isToday:Boolean,description:String})=>void} onPressDay
  */
 
 /**
  * @typedef PersianDatePickerState
  * @property {moment.Moment} userDate
- * @property {Array<Number?>} days
- * @property {Array<Number>} selectedDays
+ * @property {Array<Object>} days
+ * @property {Array<String|Number>} selectedDays
  */
 
 export default class PersianDatePicker extends React.Component {
   static defaultProps = {
-    local: PERSIAN,
-    date: moment(),
+    locale: PERSIAN,
     size: "f",
     type: "calendar",
+    showDescription: true,
   };
 
   /**
@@ -50,6 +57,7 @@ export default class PersianDatePicker extends React.Component {
   };
 
   #isPersian = true;
+  #days;
 
   /**
    *
@@ -58,17 +66,21 @@ export default class PersianDatePicker extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state.userDate = moment(props.date, props.inputDateFormat);
+    this.#days = props.days?.map((d) => ({
+      ...d,
+      date: safeParseDate(d.date, props.inputDateFormat),
+    }));
+
+    this.state.userDate = safeParseDate(props.date, props.inputDateFormat);
 
     this.state.days = fillDays(
-      props.local,
+      props.locale,
       this.state.userDate,
       mixDisabledDate(props),
-      props.days,
-      props.inputDateFormat
+      this.#days
     );
 
-    this.#isPersian = props.local.type == "fa";
+    this.#isPersian = props.locale.type == "fa";
 
     this._onPressNextMonth = this.#onPressChangeMonth.bind(this, true);
     this._onPressPreviousMonth = this.#onPressChangeMonth.bind(this, false);
@@ -76,25 +88,23 @@ export default class PersianDatePicker extends React.Component {
 
   render() {
     const {
-      local = PERSIAN,
-      inputDateFormat,
+      locale = PERSIAN,
       size = "f",
       type = "calendar",
+      showDescription,
+      renderDescription,
+      renderNextMonth,
+      renderPreviousMonth,
     } = this.props;
     const isPersian = this.#isPersian;
 
     const { userDate, days, selectedDays } = this.state;
-    const [year, month] = userDate
-      .format(isPersian ? FORMAT_PERSIAN : FORMAT_ENGLISH)
-      .split("-")
-      .map((v) => Number(v));
 
-    const selectedDaysThisMonth = getSelectedDays(
+    const selectedDaysThisMonth = getNumberSelectedDays(
       selectedDays,
       userDate,
       type,
-      isPersian,
-      inputDateFormat
+      isPersian
     );
 
     return (
@@ -105,28 +115,24 @@ export default class PersianDatePicker extends React.Component {
           size === "m" && styles.containerM,
         ]}
       >
-        <View style={styles.yearBase}>
-          <TouchableOpacity onPress={this._onPressNextMonth}>
-            <Text style={styles.arrow}>{"<"}</Text>
-          </TouchableOpacity>
+        <YearMonthView
+          userDate={userDate}
+          isPersian={isPersian}
+          locale={locale}
+          renderNextMonth={renderNextMonth}
+          renderPreviousMonth={renderPreviousMonth}
+          onPressNext={this._onPressNextMonth}
+          onPressPrevious={this._onPressPreviousMonth}
+        />
 
-          <Text style={styles.yearMonthTitle}>
-            {local.nameMonth[month - 1] + "\t\t\t" + formatNumber(year, local)}
-          </Text>
-
-          <TouchableOpacity onPress={this._onPressPreviousMonth}>
-            <Text style={styles.arrow}>{">"}</Text>
-          </TouchableOpacity>
-        </View>
-
-        <WeekView local={local} isPersian={isPersian} />
+        <WeekView locale={locale} isPersian={isPersian} />
 
         <FlatList
           data={days}
           renderItem={renderDayItemView.bind(null, {
             type,
             size,
-            local,
+            locale,
             isPersian,
             selectedDays: selectedDaysThisMonth,
             onPress: this.#onPressDay,
@@ -134,18 +140,29 @@ export default class PersianDatePicker extends React.Component {
           numColumns={7}
           keyExtractor={(item, index) => `${item}:${index}`}
           columnWrapperStyle={isPersian && { flexDirection: "row-reverse" }}
+          ListFooterComponent={
+            <DescriptionView
+              days={this.#days}
+              selectedDays={selectedDays}
+              userDate={userDate}
+              type={type}
+              isPersian={isPersian}
+              show={showDescription}
+              renderDescription={renderDescription}
+            />
+          }
         />
       </View>
     );
   }
 
   #onPressDay = (item) => {
-    const { type, outputDateFormat, onPressDay, local } = this.props;
+    const { type, outputDateFormat, onPressDay, locale } = this.props;
     const { userDate } = this.state;
     const { day } = item;
     let date = moment(userDate);
 
-    date = (local.type == "fa" ? date.jDate(day) : date.date(day)).format(
+    date = (locale.type == "fa" ? date.jDate(day) : date.date(day)).format(
       "YYYY-MM-DD"
     );
 
@@ -182,13 +199,12 @@ export default class PersianDatePicker extends React.Component {
       userDate.add("month", -1);
     }
 
-    const { local, days, inputDateFormat } = this.props;
+    const { locale } = this.props;
     const _days = fillDays(
-      local,
+      locale,
       userDate,
       mixDisabledDate(this.props),
-      days,
-      inputDateFormat
+      this.#days
     );
 
     this.setState({ userDate, days: _days });
@@ -198,7 +214,7 @@ export default class PersianDatePicker extends React.Component {
 /**
  *
  * @param {Object} propsC
- * @param {Object} propsC.local
+ * @param {Object} propsC.locale
  * @param {Boolean} propsC.isFa
  * @param {String|Number} propsC.today
  * @param {Number} propsC.offDay
@@ -213,7 +229,7 @@ export default class PersianDatePicker extends React.Component {
  * @returns {React.ReactNode}
  */
 const renderDayItemView = (
-  { local, isPersian, selectedDays, type, onPress },
+  { locale, isPersian, selectedDays, type, onPress },
   { item, index }
 ) => {
   const { isSelected, isSelectedFirst, isSelectedLast, isSelectedMiddle } =
@@ -224,7 +240,7 @@ const renderDayItemView = (
       key={`${item}:${index}`}
       item={item}
       type={type}
-      local={local}
+      locale={locale}
       isPersian={isPersian}
       isSelected={isSelected}
       isSelectedFirst={isSelectedFirst}

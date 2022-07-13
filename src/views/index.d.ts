@@ -1,7 +1,7 @@
 import React from "react";
 
 interface PersianDatePickerProps {
-  local?: Object;
+  locale?: Object;
   date?: String | Number | Date;
   minDate?: String | Number | Date;
   maxDate?: String | Number | Date;

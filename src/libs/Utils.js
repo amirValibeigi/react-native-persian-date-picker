@@ -12,8 +12,8 @@ export function formatNumber(num, locale = PERSIAN) {
   return [...String(num)].map((v) => locale.daysOfWeek[v]).join("");
 }
 
-export function isMonth(isPersian, date, dateMonth, inputDateFormat) {
-  const _now = moment(dateMonth, inputDateFormat);
+export function isMonth(isPersian, date, dateMonth) {
+  const _now = moment(dateMonth);
 
   return moment(date).isBetween(
     _now.startOf(isPersian ? "jmonth" : "month").format(FORMAT_ENGLISH),
@@ -23,38 +23,50 @@ export function isMonth(isPersian, date, dateMonth, inputDateFormat) {
   );
 }
 
-export function isAfterMonth(date, dateMonth, inputDateFormat) {
-  return moment(date).isAfter(
-    moment(dateMonth, inputDateFormat).format(FORMAT_ENGLISH)
-  );
+export function isAfterMonth(date, dateMonth) {
+  return moment(date).isAfter(moment(dateMonth).format(FORMAT_ENGLISH));
 }
 
-export function getSelectedDays(
+export function getNumberSelectedDays(
   selectedDays,
   userDate,
-  type = "fa",
-  isPersian = true,
-  inputDateFormat
+  type = "calendar",
+  isPersian = true
 ) {
   if (type == "range" && selectedDays.length === 2) {
     return selectedDays.map((v) =>
-      isMonth(isPersian, v, userDate, inputDateFormat)
-        ? getSplitDate(isPersian, v, inputDateFormat)[2]
-        : isAfterMonth(v, userDate, inputDateFormat)
+      isMonth(isPersian, v, userDate)
+        ? getSplitDate(isPersian, v)[2]
+        : isAfterMonth(v, userDate)
         ? 99
         : -99
     );
   }
 
-  return selectedDays
-    .filter((v) => isMonth(isPersian, v, userDate, inputDateFormat))
-    ?.map((v) =>
-      typeof v === "number" ? v : getSplitDate(isPersian, v, inputDateFormat)[2]
-    );
+  return getSelectedDays(selectedDays, userDate, isPersian)?.map((v) =>
+    typeof v === "number" ? v : getSplitDate(isPersian, v)[2]
+  );
 }
 
-export function getSplitDate(isPersian, date, inputDateFormat) {
-  const _date = moment(date, inputDateFormat);
+export function getSelectedDays(selectedDays, userDate, isPersian = true) {
+  return selectedDays.filter((v) => isMonth(isPersian, v, userDate));
+}
+
+export function getDescriptionSelectedDays(
+  days,
+  selectedDays,
+  userDate,
+  isPersian = true
+) {
+  const _SDays = getSelectedDays(selectedDays, userDate, isPersian);
+
+  return days?.filter((v) =>
+    _SDays.includes(moment(v.date).format(FORMAT_ENGLISH))
+  );
+}
+
+export function getSplitDate(isPersian, date) {
+  const _date = moment(date);
 
   if (isPersian) {
     return [_date.jYear(), _date.jMonth(), _date.jDate()];
@@ -68,10 +80,9 @@ export function getSplitDate(isPersian, date, inputDateFormat) {
  * @param {moment.Moment} userDate
  * @param {Array<Object>} days
  * @param {Array<{date:Number|String,inclusivity:'<'|'='|'>'}>} disabledDays
- * @param {String} inputDateFormat
  * @returns {Array<Object>}
  */
-export function fillDays(local, userDate, disabledDays, days, inputDateFormat) {
+export function fillDays(local, userDate, disabledDays, days) {
   const max = userDate.daysInMonth();
   let _UserDate = moment(userDate);
   const isPersian = local?.type === "fa";
@@ -83,22 +94,20 @@ export function fillDays(local, userDate, disabledDays, days, inputDateFormat) {
 
   let now = moment();
   const today = local?.type === "fa" ? now.jDate() : now.date();
-  const isThisMonth = isMonth(isPersian, userDate, undefined, inputDateFormat);
+  const isThisMonth = isMonth(isPersian, userDate, undefined);
   const _minDisabledDate = disabledDays.find((v) => v.inclusivity == ">");
   const _maxDisabledDate = disabledDays.find((v) => v.inclusivity == "<");
   const _disabledDate = disabledDays
     .filter((v) => v.inclusivity == "=")
-    .map((v) => v.date?.format(FORMAT_ENGLISH));
+    ?.map((v) => v.date?.format(FORMAT_ENGLISH));
 
   const _days = days
     ?.filter(
-      (v) =>
-        typeof v.date === "number" ||
-        isMonth(isPersian, v.date, userDate, inputDateFormat)
+      (v) => typeof v.date === "number" || isMonth(isPersian, v.date, userDate)
     )
-    .map((v) =>
+    ?.map((v) =>
       typeof v.date != "number"
-        ? { ...v, date: getSplitDate(isPersian, v.date, inputDateFormat)[2] }
+        ? { ...v, date: getSplitDate(isPersian, v.date)[2] }
         : v
     );
 
@@ -152,6 +161,22 @@ export function mixDisabledDate(props) {
 
   return date.map((v) => ({
     ...v,
-    date: moment(v.date, props.inputDateFormat),
+    date: safeParseDate(v.date, props.inputDateFormat),
   }));
+}
+
+export function safeParseDate(date, inputDateFormat) {
+  let _date;
+  try {
+    _date = moment(date, (date && inputDateFormat) || undefined);
+
+    if (typeof _date == "undefined" || _date == undefined || _date == null) {
+      throw Error("invalid date");
+    }
+  } catch (error) {
+    _date = moment();
+    console.warn("Error Parse date: invalid date");
+  }
+
+  return _date;
 }

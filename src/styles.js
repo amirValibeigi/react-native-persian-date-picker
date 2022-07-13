@@ -139,4 +139,21 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     textAlignVertical: "center",
   },
+  line: {
+    marginBottom: 8,
+    backgroundColor: "#c3c3c388",
+    flex: 1,
+    height: 1,
+    marginHorizontal: 14,
+  },
+  descriptionBase: {
+    marginHorizontal: 20,
+    marginBottom: 8,
+  },
+  titleDescription: {
+    color: "#6c6c6c",
+  },
+  offDayDescription: {
+    color: "#F44336",
+  },
 });
