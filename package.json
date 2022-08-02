@@ -12,19 +12,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rhv79/-rhv79-react-native-persian-date-picker.git"
+    "url": "git+https://github.com/rhv79/react-native-persian-date-picker.git"
   },
   "keywords": [
-    "react-native",
+    "date picker",
     "date",
-    "picker\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[Cpersian"
+    "persian date picker",
+    "persian",
+    "react-native"
   ],
   "author": "Amir Valibeigi",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/rhv79/-rhv79-react-native-persian-date-picker/issues"
+    "url": "https://github.com/rhv79/react-native-persian-date-picker/issues"
   },
-  "homepage": "https://github.com/rhv79/-rhv79-react-native-persian-date-picker#readme",
+  "homepage": "https://github.com/rhv79/react-native-persian-date-picker#readme",
   "devDependencies": {
     "@react-native-community/eslint-config": "^3.1.0",
     "@typescript-eslint/eslint-plugin": "^5.32.0",
