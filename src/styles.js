@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
     width: 300,
   },
   containerS: {
-    width: 240,
+    width: 250,
   },
   dayBase: {
     alignContent: "center",
@@ -38,6 +38,8 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
   },
   dayOccasion: {
+    position: "absolute",
+    bottom: 0,
     fontSize: 10,
     fontWeight: "800",
     lineHeight: 8,
@@ -53,6 +55,7 @@ export const styles = StyleSheet.create({
     fontWeight: "800",
     textAlign: "center",
     textAlignVertical: "center",
+    paddingBottom: 1,
   },
   disabledDayBase: {
     backgroundColor: "#f0f0f0",

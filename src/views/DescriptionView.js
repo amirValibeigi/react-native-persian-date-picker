@@ -4,18 +4,8 @@ import { getDescriptionSelectedDays } from "../libs/Utils";
 import { styles } from "../styles";
 import DescriptionItemView from "./items/DescriptionItemView";
 
-/**
- *
- * @param {Object} props
- * @param {Array<Object>} props.days
- * @param {Array<String>} props.selectedDays
- * @param {String} props.userDate
- * @param {"calendar"|"range"|"one"|"multi"} props.type
- * @param {Boolean} props.isPersian
- * @param {Boolean} props.show
- * @returns
- */
 const DescriptionView = ({
+  style,
   days,
   selectedDays,
   userDate,
@@ -27,21 +17,23 @@ const DescriptionView = ({
   if (!show || _days?.length == 0 || type == "multi" || type == "range")
     return <></>;
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const _days = React.useMemo(
     () => getDescriptionSelectedDays(days, selectedDays, userDate, isPersian),
     [days, selectedDays, userDate, isPersian]
   );
 
   if (renderDescription) {
-    return renderDescription({ days: _days });
+    return renderDescription({ days: _days, style });
   }
 
   return (
     <FlatList
       data={_days}
       keyExtractor={(item, index) => `${item}:${index}`}
-      renderItem={DescriptionItemView}
+      renderItem={DescriptionItemView.bind(null, { style: style?.item })}
       ListHeaderComponent={_days?.length > 0 && <View style={styles.line} />}
+      style={style?.container}
     />
   );
 };

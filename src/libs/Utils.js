@@ -180,3 +180,26 @@ export function safeParseDate(date, inputDateFormat) {
 
   return _date;
 }
+
+export function deepAssign(...objects) {
+  const isObject = (obj) => obj && typeof obj === "object";
+
+  return objects.reduce((prev, obj) => {
+    if (typeof obj == "undefined") return prev;
+
+    Object.keys(obj).forEach((key) => {
+      const pVal = prev[key];
+      const oVal = obj[key];
+
+      if (Array.isArray(pVal) && Array.isArray(oVal)) {
+        prev[key] = pVal.concat(...oVal);
+      } else if (isObject(pVal) && isObject(oVal)) {
+        prev[key] = deepAssign(pVal, oVal);
+      } else {
+        prev[key] = oVal;
+      }
+    });
+
+    return prev;
+  }, {});
+}

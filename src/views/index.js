@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, View } from "react-native";
 import DayItemView from "./items/DayItemView";
 import { PERSIAN } from "../libs/Locales";
 import { styles } from "../styles";
@@ -7,39 +7,27 @@ import WeekView from "./WeekView";
 import moment from "jalali-moment";
 import {
   fillDays,
-  formatNumber,
   getNumberSelectedDays,
   mixDisabledDate,
   safeParseDate,
 } from "../libs/Utils";
-import { FORMAT_ENGLISH, FORMAT_PERSIAN } from "../libs/Format";
 import DescriptionView from "./DescriptionView";
 import YearMonthView from "./YearMonthView";
 
 /**
- * @typedef PersianDatePickerProps
- * @property {Object} locale
- * @property {String|Number} date
- * @property {String} inputDateFormat
- * @property {String} outputDateFormat
- * @property {Array<{date:String|Number,isOffDay:Boolean,description:String}>} days
- * @property {"f"|"m"|"s"} size
- * @property {Boolean} [showDescription=true] only calendar and one
- * @property {"calendar"|"range"|"one"|"multi"} type
- * @property {React.FC<{days:Object}>} renderDescription
- * @property {React.FC<{onPress:Function}>} renderNextMonth
- * @property {React.FC<{onPress:Function}>} renderPreviousMonth
- * @property {(day:{day:String|Number,isOffDay:Boolean,isToday:Boolean,description:String})=>void} onPressDay
- */
-
-/**
  * @typedef PersianDatePickerState
  * @property {moment.Moment} userDate
- * @property {Array<Object>} days
+ * @property {Array<import("../types/types").DayType>} days
  * @property {Array<String|Number>} selectedDays
  */
 
-export default class PersianDatePicker extends React.Component {
+/**
+ * @extends {React.Component<import("./index").PersianDatePickerProps>}
+ */
+export class PersianDatePicker extends React.Component {
+  /**
+   * @type {import("./index").PersianDatePickerProps}
+   */
   static defaultProps = {
     locale: PERSIAN,
     size: "f",
@@ -61,7 +49,7 @@ export default class PersianDatePicker extends React.Component {
 
   /**
    *
-   * @param {PersianDatePickerProps} props
+   * @param {import("./index").PersianDatePickerProps} props
    */
   constructor(props) {
     super(props);
@@ -95,6 +83,12 @@ export default class PersianDatePicker extends React.Component {
       renderDescription,
       renderNextMonth,
       renderPreviousMonth,
+      renderDay,
+      style,
+      styleDay,
+      styleDescription,
+      styleWeek,
+      styleYearMonth,
     } = this.props;
     const isPersian = this.#isPersian;
 
@@ -113,6 +107,7 @@ export default class PersianDatePicker extends React.Component {
           styles.container,
           size === "s" && styles.containerS,
           size === "m" && styles.containerM,
+          style,
         ]}
       >
         <YearMonthView
@@ -121,19 +116,22 @@ export default class PersianDatePicker extends React.Component {
           locale={locale}
           renderNextMonth={renderNextMonth}
           renderPreviousMonth={renderPreviousMonth}
+          style={styleYearMonth}
           onPressNext={this._onPressNextMonth}
           onPressPrevious={this._onPressPreviousMonth}
         />
 
-        <WeekView locale={locale} isPersian={isPersian} />
+        <WeekView locale={locale} isPersian={isPersian} style={styleWeek} />
 
         <FlatList
           data={days}
           renderItem={renderDayItemView.bind(null, {
+            style: styleDay,
             type,
             size,
             locale,
             isPersian,
+            renderDay: renderDay,
             selectedDays: selectedDaysThisMonth,
             onPress: this.#onPressDay,
           })}
@@ -149,6 +147,7 @@ export default class PersianDatePicker extends React.Component {
               isPersian={isPersian}
               show={showDescription}
               renderDescription={renderDescription}
+              style={styleDescription}
             />
           }
         />
@@ -169,7 +168,7 @@ export default class PersianDatePicker extends React.Component {
     let selectedDays =
       type === "one" || type === "calendar" ? [] : [...this.state.selectedDays];
 
-    if (type === "range") {
+    if (type == "range" || type == "multi") {
       let iItem;
       if ((iItem = selectedDays.indexOf(date)) >= 0) {
         selectedDays.splice(iItem, 1);
@@ -177,12 +176,16 @@ export default class PersianDatePicker extends React.Component {
         selectedDays.push(date);
         selectedDays = selectedDays.sort((a, b) => a >= b);
       }
-      if (selectedDays.length > 2) {
-        selectedDays = [selectedDays[0], selectedDays[selectedDays.length - 1]];
-      }
     } else {
       selectedDays.push(date);
     }
+
+    if (type === "range") {
+      if (selectedDays.length > 2) {
+        selectedDays = [selectedDays[0], selectedDays[selectedDays.length - 1]];
+      }
+    }
+
     this.setState({ selectedDays });
 
     onPressDay?.(
@@ -229,11 +232,34 @@ export default class PersianDatePicker extends React.Component {
  * @returns {React.ReactNode}
  */
 const renderDayItemView = (
-  { locale, isPersian, selectedDays, type, onPress },
+  {
+    style,
+    renderDay: RenderDay,
+    locale,
+    isPersian,
+    selectedDays,
+    type,
+    onPress,
+  },
   { item, index }
 ) => {
   const { isSelected, isSelectedFirst, isSelectedLast, isSelectedMiddle } =
     statusSelected(item.day, index, type, selectedDays);
+
+  if (RenderDay)
+    return RenderDay({
+      index,
+      item: item,
+      type: type,
+      locale: locale,
+      isPersian: isPersian,
+      isSelected: isSelected,
+      isSelectedFirst: isSelectedFirst,
+      isSelectedLast: isSelectedLast,
+      isSelectedMiddle: isSelectedMiddle,
+      style: style,
+      onPress: onPress,
+    });
 
   return (
     <DayItemView
@@ -246,6 +272,7 @@ const renderDayItemView = (
       isSelectedFirst={isSelectedFirst}
       isSelectedLast={isSelectedLast}
       isSelectedMiddle={isSelectedMiddle}
+      style={style}
       onPress={onPress}
     />
   );

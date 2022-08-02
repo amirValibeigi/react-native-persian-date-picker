@@ -5,6 +5,7 @@ import { formatNumber } from "../libs/Utils";
 import { styles } from "../styles";
 
 function YearMonthView({
+  style,
   userDate,
   locale,
   isPersian,
@@ -19,21 +20,21 @@ function YearMonthView({
     .map((v) => Number(v));
 
   return (
-    <View style={styles.yearBase}>
+    <View style={[styles.yearBase, style?.container]}>
       {(renderNextMonth && renderNextMonth({ onPress: onPressNext })) || (
         <TouchableOpacity onPress={onPressNext}>
-          <Text style={styles.arrow}>{"<"}</Text>
+          <Text style={[styles.arrow, style?.icons]}>{"<"}</Text>
         </TouchableOpacity>
       )}
 
-      <Text style={styles.yearMonthTitle}>
+      <Text style={[styles.yearMonthTitle, style?.title]}>
         {locale.nameMonth[month - 1] + "\t\t\t" + formatNumber(year, locale)}
       </Text>
 
       {(renderPreviousMonth &&
         renderPreviousMonth({ onPress: onPressPrevious })) || (
         <TouchableOpacity onPress={onPressPrevious}>
-          <Text style={styles.arrow}>{">"}</Text>
+          <Text style={[styles.arrow, style?.icons]}>{">"}</Text>
         </TouchableOpacity>
       )}
     </View>

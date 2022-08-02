@@ -1,14 +1,17 @@
 import React from "react";
 import { Text, View } from "react-native";
+import { deepAssign } from "../../libs/Utils";
 import { styles } from "../../styles";
 
-function DescriptionItemView({ item }) {
+function DescriptionItemView({ style }, { item }) {
   return (
-    <View style={styles.descriptionBase}>
+    <View style={[styles.descriptionBase, style?.container]}>
       <Text
         style={[
           styles.titleDescription,
-          item.isOffDay && styles.offDayDescription,
+          style?.title,
+          item.isOffDay &&
+            deepAssign(styles.offDayDescription, style?.titleIsOffDay),
         ]}
       >
         {item.description ?? "-"}
