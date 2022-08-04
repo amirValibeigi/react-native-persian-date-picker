@@ -74,6 +74,39 @@ export class PersianDatePicker extends React.Component {
     this._onPressPreviousMonth = this.#onPressChangeMonth.bind(this, false);
   }
 
+  UNSAFE_componentWillReceiveProps(props) {
+    // safe props
+    if (typeof props === "undefined" || !props) return;
+
+    if (
+      this.props?.locale != props.locale ||
+      this.props?.date != props.date ||
+      this.props?.disabledDate != props.disabledDate ||
+      this.props?.minDate != props.minDate ||
+      this.props?.maxDate != props.maxDate ||
+      this.props?.days != props.days ||
+      this.props?.inputDateFormat != props.inputDateFormat ||
+      this.props?.outputDateFormat != props.outputDateFormat
+    ) {
+      this.#days = props.days?.map((d) => ({
+        ...d,
+        date: safeParseDate(d.date, props.inputDateFormat),
+      }));
+
+      this.setState({
+        userDate: safeParseDate(props.date, props.inputDateFormat),
+        days: fillDays(
+          props.locale,
+          this.state.userDate,
+          mixDisabledDate(props),
+          this.#days
+        ),
+      });
+
+      this.#isPersian = props.locale.type == "fa";
+    }
+  }
+
   render() {
     const {
       locale = PERSIAN,

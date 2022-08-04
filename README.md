@@ -72,13 +72,8 @@ const maxDisableDate = "1401-01-20";
       containerIsDisabled: { margin: 2 },
     }}
     size="m"
-    onPressDay={(dates) => console.log(dates)}
   />
 </View>;
-```
-
-```bash
-output: ["2022-03-28T00:00:00+04:30"]
 ```
 
 ---
@@ -97,8 +92,13 @@ output: ["2022-03-28T00:00:00+04:30"]
     maxDate={maxDisableDate}
     disabledDate={disableDate}
     size="m"
+    onPressDay={(dates) => console.log(dates)}
   />
 </View>
+```
+
+```bash
+output: ["2022-03-28T00:00:00+04:30"]
 ```
 
 ---
@@ -147,7 +147,7 @@ import PersianDatePicker, {
   maxDate={maxDisableDate}
   disabledDate={disableDate}
   size="m"
-  locale={ENGLISH_FA}
+  locale={PERSIAN_EN}
 />;
 
 <PersianDatePicker
@@ -184,7 +184,6 @@ const customLocal = {
   maxDate={maxDisableDate}
   disabledDate={disableDate}
   size="m"
-  locale={ENGLISH_FA}
 />;
 
 <PersianDatePicker
@@ -195,7 +194,6 @@ const customLocal = {
   maxDate={maxDisableDate}
   disabledDate={disableDate}
   size="m"
-  locale={ENGLISH_FA}
 />;
 ```
 
@@ -254,29 +252,29 @@ Date | String | Number | Object
 
 ### Locale
 
-| prop           | type          |
-| -------------- | ------------- |
-| dayOffOfWeek   | Number        |
-| daysOfWeek     | Array<String> |
-| nameDaysOfWeek | Array<String> |
-| nameMonth      | Array<String> |
-| type           | String        |
+| prop           | type           |
+| -------------- | -------------- |
+| dayOffOfWeek   | Number         |
+| daysOfWeek     | Array\<String> |
+| nameDaysOfWeek | Array\<String> |
+| nameMonth      | Array\<String> |
+| type           | String         |
 
 ### RenderDay
 
-| prop             | type                   |
-| ---------------- | ---------------------- |
-| item             | DayType                |
-| index            | Number                 |
-| type             | CalendarType           |
-| locale           | Locale                 |
-| isPersian        | Boolean                |
-| isSelected       | Boolean                |
-| isSelectedFirst  | Boolean                |
-| isSelectedLast   | Boolean                |
-| isSelectedMiddle | Boolean                |
-| style?           | StyleDayItem           |
-| onPress          | (day: DayType) => void |
+| prop             | type                           |
+| ---------------- | ------------------------------ |
+| item             | DayType                        |
+| index            | Number                         |
+| type             | CalendarType                   |
+| locale           | Locale                         |
+| isPersian        | Boolean                        |
+| isSelected       | Boolean                        |
+| isSelectedFirst  | Boolean                        |
+| isSelectedLast   | Boolean                        |
+| isSelectedMiddle | Boolean                        |
+| style?           | StyleDayItem                   |
+| onPress          | (day: Array\<DayType>) => void |
 
 ### StyleDayItem
 
