@@ -201,33 +201,33 @@ const customLocal = {
 
 ## props
 
-| prop                | type                            |
-| ------------------- | ------------------------------- |
-| date                | String \| Number \| Date        |
-| days                | Array<DayType>                  |
-| disabledDate        | Array<String \| Number \| Date> |
-| inputDateFormat     | String                          |
-| locale              | Locale                          |
-| maxDate             | String                          |
-| minDate             | String                          |
-| onPressDay          | (dates:Array<String>)=>void     |
-| outputDateFormat    | String                          |
-| renderDay           | RenderDay                       |
-| renderDescription   | RenderDescription               |
-| renderNextMonth     | RenderNextMonth                 |
-| renderPreviousMonth | RenderPreviousMonth             |
-| showDescription     | Boolean                         |
-| size                | SizeType                        |
-| style               | ViewStyle                       |
-| styleDay            | StyleDayItem                    |
-| styleDescription    | StyleDescription                |
-| styleWeek           | StyleWeek                       |
-| styleYearMonth      | StyleYearMonth                  |
-| type                | CalendarType                    |
+| prop                | type                              |
+|---------------------|-----------------------------------|
+| date                | String \| Number \| Date          |
+| days                | Array\<DayType\>                  |
+| disabledDate        | Array\<String \| Number \| Date\> |
+| inputDateFormat     | String                            |
+| locale              | Locale                            |
+| maxDate             | String                            |
+| minDate             | String                            |
+| onPressDay          | (dates:Array\<String\>)=>void     |
+| outputDateFormat    | String                            |
+| renderDay           | RenderDay                         |
+| renderDescription   | RenderDescription                 |
+| renderNextMonth     | RenderNextMonth                   |
+| renderPreviousMonth | RenderPreviousMonth               |
+| showDescription     | Boolean                           |
+| size                | SizeType                          |
+| style               | ViewStyle                         |
+| styleDay            | StyleDayItem                      |
+| styleDescription    | StyleDescription                  |
+| styleWeek           | StyleWeek                         |
+| styleYearMonth      | StyleYearMonth                    |
+| type                | CalendarType                      |
 
 ### CalendarType
 
-"calendar" \| "range" \| "one" \| "multi"
+"calendar" | "range" | "one" | "multi"
 
 ### DateType
 
@@ -235,7 +235,7 @@ Date | String | Number | Object
 
 ### SizeType
 
-"s" \| "m" \| "f"
+"s" | "m" | "f"
 
 - s: small
 - m: medium

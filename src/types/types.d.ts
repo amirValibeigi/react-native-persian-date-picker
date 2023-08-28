@@ -1,13 +1,20 @@
-export declare type DateType = String | Number | Date;
+import type { Moment, MomentInput } from 'jalali-moment';
+
+export declare type DateType = MomentInput;
+
+export declare type DisableDateType = {
+  date: Moment;
+  inclusivity?: '<' | '=' | '>';
+};
 
 export declare type DayType = {
   date?: DateType;
-  isOffDay?: Boolean;
-  isToday?: Boolean;
-  description?: String;
+  isOffDay?: boolean;
+  isToday?: boolean;
+  isDisabled?: boolean;
+  day?: number | string;
+  description?: string;
 };
-
-export declare type DateType = Date | String | Number | Object;
 
 /**
  * size type
@@ -16,7 +23,7 @@ export declare type DateType = Date | String | Number | Object;
  * m: Medium 300
  * s: Small 250
  */
-export declare type SizeType = "s" | "m" | "f";
+export declare type SizeType = 's' | 'm' | 'f';
 
 /**
  * calendar type
@@ -29,4 +36,4 @@ export declare type SizeType = "s" | "m" | "f";
  *
  * range: select range date
  */
-export declare type CalendarType = "calendar" | "range" | "one" | "multi";
+export declare type CalendarType = 'calendar' | 'range' | 'one' | 'multi';
