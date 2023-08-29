@@ -60,7 +60,7 @@ export const PersianDatePicker = React.memo((props: PersianDatePickerProps) => {
         renderItem={renderDayFunc}
         numColumns={7}
         keyExtractor={(item, index) => `${item.day}:${index}`}
-        columnWrapperStyle={isPersian && { flexDirection: 'row-reverse' }}
+        columnWrapperStyle={isPersian && styles.rowReverse}
         ListFooterComponent={
           <DescriptionView
             days={days ?? []}

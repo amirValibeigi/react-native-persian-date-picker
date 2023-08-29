@@ -121,23 +121,6 @@ const DayItemView = React.memo(
         </Text>
       </TouchableOpacity>
     );
-  },
-  (prevProps, nextProps) => {
-    return (
-      prevProps.index === nextProps.index &&
-      prevProps.isSelectedFirst === nextProps.isSelectedFirst &&
-      prevProps.isSelectedMiddle === nextProps.isSelectedMiddle &&
-      prevProps.isSelected === nextProps.isSelected &&
-      prevProps.isSelectedLast === nextProps.isSelectedLast &&
-      prevProps.isPersian === nextProps.isPersian &&
-      prevProps.type === nextProps.type &&
-      prevProps.style === nextProps.style &&
-      prevProps.item.day === nextProps.item.day &&
-      prevProps.item.isDisabled === nextProps.item.isDisabled &&
-      prevProps.item.isOffDay === nextProps.item.isOffDay &&
-      prevProps.item.isToday === nextProps.item.isToday &&
-      prevProps.item.description === nextProps.item.description
-    );
   }
 );
 

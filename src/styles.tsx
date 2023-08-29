@@ -57,12 +57,27 @@ export const styles = StyleSheet.create({
     textAlignVertical: 'center',
     paddingBottom: 1,
   },
+  descriptionBase: {
+    marginHorizontal: 20,
+    marginBottom: 8,
+  },
   disabledDayBase: {
     backgroundColor: '#f0f0f0',
+  },
+  line: {
+    marginBottom: 8,
+    backgroundColor: '#c3c3c388',
+    flex: 1,
+    height: 1,
+    marginHorizontal: 14,
+  },
+  offDayDescription: {
+    color: '#F44336',
   },
   offDayTitle: {
     color: '#F44336',
   },
+  rowReverse: { flexDirection: 'row-reverse' },
   selectDayBase: {
     backgroundColor: '#fff',
     borderColor: '#03a9f488',
@@ -104,6 +119,9 @@ export const styles = StyleSheet.create({
   textL: {
     fontSize: 20,
   },
+  titleDescription: {
+    color: '#6c6c6c',
+  },
   todayBase: {
     backgroundColor: '#03a9f4',
     borderColor: '#03a9f4',
@@ -141,22 +159,5 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     textAlignVertical: 'center',
-  },
-  line: {
-    marginBottom: 8,
-    backgroundColor: '#c3c3c388',
-    flex: 1,
-    height: 1,
-    marginHorizontal: 14,
-  },
-  descriptionBase: {
-    marginHorizontal: 20,
-    marginBottom: 8,
-  },
-  titleDescription: {
-    color: '#6c6c6c',
-  },
-  offDayDescription: {
-    color: '#F44336',
   },
 });

@@ -38,73 +38,74 @@ export function useUI(props: PersianDatePickerProps) {
 
   const onPressChangeMonth = React.useCallback(
     (isNext: boolean) => {
-      const userDate = moment(state.userDate);
+      setState((pv) => {
+        const userDate = moment(pv.userDate);
 
-      if ((state?.isPersian && isNext) || (!state?.isPersian && !isNext)) {
-        userDate.add('month', 1);
-      } else {
-        userDate.add('month', -1);
-      }
+        if ((pv?.isPersian && isNext) || (!pv?.isPersian && !isNext)) {
+          userDate.add('month', 1);
+        } else {
+          userDate.add('month', -1);
+        }
 
-      const { locale } = props;
-      const _days = fillDays(
-        locale ?? PERSIAN,
-        userDate,
-        mixDisabledDate(props),
-        state.days as any
-      );
+        const { locale } = props;
+        const _days = fillDays(
+          locale ?? PERSIAN,
+          userDate,
+          mixDisabledDate(props),
+          pv.days as any
+        );
 
-      setState((pv) => ({ ...pv, userDate, days: _days }));
+        return { ...pv, userDate, days: _days };
+      });
     },
-    [state, props]
+    [props]
   );
 
   const onPressDay = React.useCallback(
     (item: DayType) => {
-      const { type, outputDateFormat, locale } = props;
-      const { userDate } = state;
-      const { day } = item;
-      let date: string | moment.Moment = moment(userDate);
+      setState((pv) => {
+        const { type, outputDateFormat, locale } = props;
+        const { userDate } = pv;
+        const { day } = item;
+        let date: string | moment.Moment = moment(userDate);
 
-      date = (
-        (locale ?? PERSIAN).type === 'fa'
-          ? date.jDate(parseInt(day as string, 10))
-          : date.date(parseInt(day as string, 10))
-      ).format('YYYY-MM-DD');
+        date = (
+          (locale ?? PERSIAN).type === 'fa'
+            ? date.jDate(parseInt(day as string, 10))
+            : date.date(parseInt(day as string, 10))
+        ).format('YYYY-MM-DD');
 
-      let selectedDays: Array<string | number | undefined> =
-        type === 'one' || type === 'calendar' ? [] : [...state.selectedDays];
+        let selectedDays: Array<string | number | undefined> =
+          type === 'one' || type === 'calendar' ? [] : [...pv.selectedDays];
 
-      if (type === 'range' || type === 'multi') {
-        let iItem;
-        if ((iItem = selectedDays.indexOf(date)) >= 0) {
-          selectedDays.splice(iItem, 1);
+        if (type === 'range' || type === 'multi') {
+          let iItem;
+          if ((iItem = selectedDays.indexOf(date)) >= 0) {
+            selectedDays.splice(iItem, 1);
+          } else {
+            selectedDays.push(date);
+            selectedDays = (selectedDays as Array<number>).sort();
+          }
         } else {
           selectedDays.push(date);
-          selectedDays = (selectedDays as Array<number>).sort(
-            (a, b) => (a >= b) as any
-          );
         }
-      } else {
-        selectedDays.push(date);
-      }
 
-      if (type === 'range') {
-        if (selectedDays && selectedDays.length > 2) {
-          selectedDays = [
-            selectedDays[0],
-            selectedDays[selectedDays.length - 1],
-          ];
+        if (type === 'range') {
+          if (selectedDays && selectedDays.length > 2) {
+            selectedDays = [
+              selectedDays[0],
+              selectedDays[selectedDays.length - 1],
+            ];
+          }
         }
-      }
 
-      setState((pv) => ({ ...pv, selectedDays }));
-
-      props?.onPressDay?.(
-        selectedDays.map((tDate) => moment(tDate).format(outputDateFormat))
-      );
+        props?.onPressDay?.(
+          selectedDays.map((tDate) => moment(tDate).format(outputDateFormat))
+        );
+        return { ...pv, selectedDays };
+      });
     },
-    [props, state]
+    [props]
   );
 
   const onPressList = React.useMemo(
@@ -123,7 +124,6 @@ export function useUI(props: PersianDatePickerProps) {
       state.isPersian
     );
 
-    console.log('make');
     return props?.renderDay
       ? renderCustomDayItemView.bind(null, {
           style: props.styleDay,

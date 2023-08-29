@@ -4,13 +4,13 @@ import { SafeAreaView } from 'react-native';
 import PersianDatePicker from 'react-native-persian-date-picker';
 
 export default function App() {
-  console.log('test');
   return (
     <SafeAreaView style={{ padding: 40 }}>
       <PersianDatePicker
         size="s"
-        type="calendar"
-        onPressDay={(dates) => console.log(dates)}
+        type="multi"
+        outputDateFormat="jYYYY-jMM-jDD"
+        onPressDay={(dates) => console.log('change', dates)}
       />
     </SafeAreaView>
   );
