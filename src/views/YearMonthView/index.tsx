@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  FlatList,
   type StyleProp,
   Text,
   type TextStyle,
@@ -7,11 +8,11 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { FORMAT_ENGLISH, FORMAT_PERSIAN } from '../libs/Format';
-import { formatNumber } from '../libs/Utils';
-import { styles } from '../styles';
+import { styles } from '../../styles';
 import { type Moment } from 'jalali-moment';
-import { type Locale, PERSIAN } from '../libs/Locales';
+import { type Locale } from '../../libs/Locales';
+import { useUI } from './hooks';
+import type { OnChangeYearMonth } from '../../types/types';
 
 export declare type StyleYearMonth = {
   container?: StyleProp<ViewStyle>;
@@ -39,6 +40,7 @@ export declare type YearMonthViewType = {
 
   onPressNext?: () => void;
   onPressPrevious?: () => void;
+  onChangeYearMonth?: OnChangeYearMonth;
 };
 
 function YearMonthView({
@@ -50,11 +52,22 @@ function YearMonthView({
   renderPreviousMonth,
   onPressNext,
   onPressPrevious,
+  onChangeYearMonth,
 }: YearMonthViewType) {
-  const [year, month] = userDate
-    .format(isPersian ? FORMAT_PERSIAN : FORMAT_ENGLISH)
-    .split('-')
-    .map((v) => Number(v));
+  const {
+    refList,
+    years,
+    width,
+    getItemLayout,
+    refViewabilityConfigCallbackPairs,
+    onLayout,
+    renderItem,
+  } = useUI({
+    isPersian,
+    userDate,
+    locale,
+    onChangeYearMonth,
+  });
 
   return (
     <View style={[styles.yearBase, style?.container]}>
@@ -64,14 +77,24 @@ function YearMonthView({
         </TouchableOpacity>
       )}
 
-      <Text style={[styles.yearMonthTitle, style?.title]}>
-        {(month &&
-          year &&
-          (locale ?? PERSIAN).nameMonth[month - 1] +
-            '\t\t\t' +
-            formatNumber(year, locale)) ||
-          '-'}
-      </Text>
+      <FlatList
+        ref={refList}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        scrollEventThrottle={16}
+        snapToInterval={width}
+        getItemLayout={getItemLayout}
+        bounces={false}
+        decelerationRate={0}
+        snapToAlignment="start"
+        data={years}
+        renderItem={renderItem}
+        keyExtractor={(item) => `${item.year}_${item.month}`}
+        onLayout={onLayout}
+        viewabilityConfigCallbackPairs={
+          refViewabilityConfigCallbackPairs.current
+        }
+      />
 
       {(renderPreviousMonth &&
         renderPreviousMonth({ onPress: onPressPrevious })) || (

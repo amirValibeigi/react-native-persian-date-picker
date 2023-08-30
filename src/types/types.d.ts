@@ -37,3 +37,15 @@ export declare type SizeType = 's' | 'm' | 'f';
  * range: select range date
  */
 export declare type CalendarType = 'calendar' | 'range' | 'one' | 'multi';
+
+export declare type YearMonthType = {
+  monthNumber: number;
+  month: string | number;
+  year: string | number;
+};
+
+export declare type OnChangeYearMonth = (
+  year: number,
+  month: number,
+  isPersian: boolean
+) => void;

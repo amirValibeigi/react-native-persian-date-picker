@@ -2,6 +2,7 @@ import { type Locale, PERSIAN } from './Locales';
 import moment from 'jalali-moment';
 import { FORMAT_ENGLISH } from './Format';
 import type { CalendarType, DayType, DisableDateType } from '../types/types';
+import React, { type DependencyList } from 'react';
 
 export function formatNumber(num?: string | number, locale = PERSIAN): string {
   return ([...String(num)] as Array<any>)
@@ -216,4 +217,25 @@ export function deepAssign(...objects: any[]) {
 
     return prev;
   }, {});
+}
+
+export function useDebounceInput<T extends Function>(
+  callback: T,
+  delay = 1000,
+  deps: DependencyList
+): T {
+  const refTimeout = React.useRef<NodeJS.Timeout>();
+
+  const makerFunc = React.useCallback(
+    (...args: any[]) => {
+      clearTimeout(refTimeout.current);
+      refTimeout.current = setTimeout(() => {
+        callback(...args);
+      }, delay);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [delay, ...(deps ?? [])]
+  );
+
+  return makerFunc as any;
 }
