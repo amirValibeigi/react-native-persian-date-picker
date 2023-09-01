@@ -64,6 +64,7 @@ export const styles = StyleSheet.create({
   disabledDayBase: {
     backgroundColor: '#f0f0f0',
   },
+  fillParent: { flex: 1 },
   line: {
     marginBottom: 8,
     backgroundColor: '#c3c3c388',
@@ -77,6 +78,7 @@ export const styles = StyleSheet.create({
   offDayTitle: {
     color: '#F44336',
   },
+  row: { flexDirection: 'row' },
   rowReverse: { flexDirection: 'row-reverse' },
   selectDayBase: {
     backgroundColor: '#fff',

@@ -7,6 +7,7 @@ import DescriptionView from './DescriptionView';
 import YearMonthView from './YearMonthView';
 import type { PersianDatePickerProps } from './index.types';
 import { useUI } from './hooks';
+import SelectYearMonthView from './SelectYearMonthView';
 
 export const PersianDatePicker = React.memo((props: PersianDatePickerProps) => {
   const {
@@ -21,16 +22,21 @@ export const PersianDatePicker = React.memo((props: PersianDatePickerProps) => {
     styleDescription,
     styleWeek,
     styleYearMonth,
+    maxDate,
+    minDate,
   } = props;
 
   const {
-    userDate,
+    refSelectYearMonth,
     days,
-    selectedDays,
     isPersian,
-    onPressPreviousMonth,
+    selectedDays,
+    userDate,
+    onPressYearMonth,
     onPressNextMonth,
+    onPressPreviousMonth,
     renderDayFunc,
+    onChangeDate,
   } = useUI(props);
 
   return (
@@ -49,8 +55,10 @@ export const PersianDatePicker = React.memo((props: PersianDatePickerProps) => {
         renderNextMonth={renderNextMonth}
         renderPreviousMonth={renderPreviousMonth}
         style={styleYearMonth}
+        onPress={onPressYearMonth}
         onPressNext={onPressNextMonth}
         onPressPrevious={onPressPreviousMonth}
+        // onChangeYearMonth={onPressChangeMonth} //TODO: bug
       />
 
       <WeekView locale={locale} isPersian={isPersian} style={styleWeek} />
@@ -73,6 +81,15 @@ export const PersianDatePicker = React.memo((props: PersianDatePickerProps) => {
             style={styleDescription}
           />
         }
+      />
+      <SelectYearMonthView
+        ref={refSelectYearMonth}
+        userDate={userDate}
+        locale={locale}
+        isPersian={isPersian}
+        maxDate={maxDate}
+        minDate={minDate}
+        onChange={onChangeDate}
       />
     </View>
   );

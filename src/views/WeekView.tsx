@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { type Locale, PERSIAN } from '../libs/Locales';
 import WeekItemView from './items/WeekItemView';
+import { styles } from '../styles';
 
 export declare type WeekViewType = {
   style?: {
@@ -29,7 +30,7 @@ const WeekView = ({ style, locale = PERSIAN, isPersian }: WeekViewType) => {
       })}
       numColumns={7}
       keyExtractor={(item, index) => `${item}:${index}`}
-      columnWrapperStyle={isPersian && { flexDirection: 'row-reverse' }}
+      columnWrapperStyle={isPersian && styles.rowReverse}
       style={style?.container}
     />
   );

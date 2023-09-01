@@ -44,6 +44,12 @@ export declare type YearMonthType = {
   year: string | number;
 };
 
+export declare type MonthType = {
+  monthNumber: number;
+  month: string | number;
+  disable: boolean;
+};
+
 export declare type OnChangeYearMonth = (
   year: number,
   month: number,

@@ -1,47 +1,8 @@
 import React from 'react';
-import {
-  FlatList,
-  type StyleProp,
-  Text,
-  type TextStyle,
-  TouchableOpacity,
-  View,
-  type ViewStyle,
-} from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { styles } from '../../styles';
-import { type Moment } from 'jalali-moment';
-import { type Locale } from '../../libs/Locales';
 import { useUI } from './hooks';
-import type { OnChangeYearMonth } from '../../types/types';
-
-export declare type StyleYearMonth = {
-  container?: StyleProp<ViewStyle>;
-  icons?: StyleProp<TextStyle>;
-  title?: StyleProp<TextStyle>;
-};
-
-export declare type RenderNextMonth = React.FC<{
-  onPress?: () => void;
-}>;
-
-export declare type RenderPreviousMonth = React.FC<{
-  onPress?: () => void;
-}>;
-
-export declare type YearMonthViewType = {
-  style?: StyleYearMonth;
-
-  userDate: Moment;
-  locale?: Locale;
-  isPersian?: boolean;
-
-  renderNextMonth?: RenderNextMonth;
-  renderPreviousMonth?: RenderPreviousMonth;
-
-  onPressNext?: () => void;
-  onPressPrevious?: () => void;
-  onChangeYearMonth?: OnChangeYearMonth;
-};
+import type { YearMonthViewType } from './index.types';
 
 function YearMonthView({
   style,
@@ -50,6 +11,7 @@ function YearMonthView({
   isPersian,
   renderNextMonth,
   renderPreviousMonth,
+  onPress,
   onPressNext,
   onPressPrevious,
   onChangeYearMonth,
@@ -67,6 +29,7 @@ function YearMonthView({
     userDate,
     locale,
     onChangeYearMonth,
+    onPress,
   });
 
   return (
@@ -80,6 +43,7 @@ function YearMonthView({
       <FlatList
         ref={refList}
         horizontal
+        scrollEnabled={false} //TODO: fix bug temporary
         showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
         snapToInterval={width}
@@ -94,6 +58,7 @@ function YearMonthView({
         viewabilityConfigCallbackPairs={
           refViewabilityConfigCallbackPairs.current
         }
+        initialNumToRender={6}
       />
 
       {(renderPreviousMonth &&

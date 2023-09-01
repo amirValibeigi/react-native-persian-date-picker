@@ -17,7 +17,7 @@ export function isMonth(
 ): boolean {
   const _now = moment(dateMonth);
 
-  return moment(date).isBetween(
+  return moment(moment(date).format(FORMAT_ENGLISH)).isBetween(
     _now.startOf(isPersian ? 'jmonth' : 'month').format(FORMAT_ENGLISH),
     _now.endOf(isPersian ? 'jmonth' : 'month').format(FORMAT_ENGLISH),
     undefined,
@@ -125,13 +125,13 @@ export function fillDays(
     ...[...Array(start).keys()].map(() => ''),
     ...[...Array(max).keys()].map((item, index) => {
       const v = item + 1;
-      const tmp = _days?.filter((tmpDay) => tmpDay.date == v)?.[0];
+      const tmp = _days?.filter((tmpDay) => tmpDay.date === v)?.[0];
       const _tmpDate = isPersian ? _UserDate.jDate(v) : _UserDate.date(v);
       const _tmpFDate = _tmpDate.format(FORMAT_ENGLISH);
 
       return {
         day: v,
-        isToday: isThisMonth && v == today,
+        isToday: isThisMonth && v === today,
         isOffDay:
           tmp?.isOffDay ||
           (index + start + 1) % (local?.dayOffOfWeek + 1) === 0,
@@ -200,7 +200,7 @@ export function deepAssign(...objects: any[]) {
   const isObject = (obj: any) => obj && typeof obj === 'object';
 
   return objects.reduce((prev, obj) => {
-    if (typeof obj == 'undefined') return prev;
+    if (typeof obj === 'undefined') return prev;
 
     Object.keys(obj).forEach((key) => {
       const pVal = prev[key];

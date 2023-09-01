@@ -1,13 +1,8 @@
-import {
-  FORMAT_ENGLISH,
-  FORMAT_PERSIAN,
-  type Locale,
-  PERSIAN,
-} from 'react-native-persian-date-picker';
+import { type Locale, PERSIAN } from '../../libs/Locales';
 import { type Moment } from 'jalali-moment';
 import YearItemView from '../items/YearItemView';
 import React from 'react';
-import type { StyleYearMonth } from './index';
+import type { StyleYearMonth } from './index.types';
 import type { OnChangeYearMonth, YearMonthType } from '../../types/types';
 import type {
   FlatList,
@@ -16,6 +11,7 @@ import type {
   ViewToken,
 } from 'react-native';
 import { useDebounceInput } from '../../libs/Utils';
+import { FORMAT_ENGLISH, FORMAT_PERSIAN } from '../../libs/Format';
 
 export function useUI({
   isPersian,
@@ -23,12 +19,14 @@ export function useUI({
   style,
   locale,
   onChangeYearMonth,
+  onPress,
 }: {
   isPersian?: boolean;
   userDate: Moment;
   locale?: Locale;
   style?: StyleYearMonth;
   onChangeYearMonth?: OnChangeYearMonth;
+  onPress?: () => void;
 }) {
   const refList = React.useRef<FlatList>(null);
   const { width, onLayout } = useWidth();
@@ -55,11 +53,10 @@ export function useUI({
           vYears.push({
             year: y,
             month: vLocal.nameMonth[m] ?? '-',
-            monthNumber: m,
+            monthNumber: m + 1,
           });
         }
       }
-
       setYears(vYears);
     }
   }, [year, locale]);
@@ -90,15 +87,18 @@ export function useUI({
   const onViewableItemsChanged = React.useCallback(
     ({
       viewableItems,
+      changed,
     }: {
       viewableItems: Array<ViewToken>;
       changed: Array<ViewToken>;
     }) => {
-      if (!viewableItems || viewableItems.length === 0) {
+      if (!viewableItems || viewableItems.length === 0 || changed.length > 1) {
         return;
       }
+      //TODO: fix bug loop change
       onChangeDebounce(viewableItems[0]);
     },
+    // eslint-disable-next-line
     []
   );
 
@@ -118,8 +118,9 @@ export function useUI({
       YearItemView.bind(null, {
         style: style?.title,
         width,
+        onPress,
       }),
-    [style?.title, width]
+    [onPress, style?.title, width]
   );
 
   React.useEffect(makeData, [makeData]);

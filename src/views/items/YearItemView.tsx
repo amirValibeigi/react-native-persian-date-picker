@@ -1,11 +1,17 @@
 import { styles } from '../../styles';
-import { type StyleProp, Text, type TextStyle } from 'react-native';
+import {
+  type StyleProp,
+  Text,
+  type TextStyle,
+  TouchableOpacity,
+} from 'react-native';
 import React from 'react';
 import type { YearMonthType } from '../../types/types';
 
 export declare type YearItemViewAccess = {
   width: number;
   style?: StyleProp<TextStyle>;
+  onPress?: () => void;
 };
 
 export declare type YearItemViewProp = {
@@ -13,13 +19,15 @@ export declare type YearItemViewProp = {
 };
 
 const YearItemViewBase = React.memo(
-  ({ style, width, item }: YearItemViewAccess & YearItemViewProp) => {
+  ({ style, width, item, onPress }: YearItemViewAccess & YearItemViewProp) => {
     const vStyle = React.useMemo(() => ({ width }), [width]);
 
     return (
-      <Text style={[styles.yearMonthTitle, vStyle, style]}>
-        {item.month + '\t\t\t' + item.year}
-      </Text>
+      <TouchableOpacity onPress={onPress}>
+        <Text style={[styles.yearMonthTitle, vStyle, style]}>
+          {item.month + '\t\t\t' + item.year}
+        </Text>
+      </TouchableOpacity>
     );
   }
 );

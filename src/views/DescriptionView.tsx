@@ -46,7 +46,7 @@ const DescriptionView = ({
     [days, selectedDays, userDate, isPersian]
   );
 
-  if (!show || _days?.length == 0 || type == 'multi' || type == 'range')
+  if (!show || _days?.length === 0 || type === 'multi' || type === 'range')
     return <></>;
 
   if (renderDescription) {

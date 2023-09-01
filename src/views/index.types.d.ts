@@ -1,6 +1,6 @@
 import { CalendarType, DayType, SizeType } from '../types/types';
-import { Locale } from 'react-native-persian-date-picker';
-import DayItemView, { StyleDayItem } from './items/DayItemView';
+import { Locale } from '../libs/Locales';
+import { StyleDayItem } from './items/DayItemView';
 import { ViewStyle } from 'react-native';
 import React from 'react';
 import {
@@ -142,6 +142,7 @@ export declare type PersianDatePickerProps = {
   type?: CalendarType;
 
   onPressDay?: (dates: Array<string>) => void;
+  onChangeYearMonth?: (date: string) => void;
 };
 
 export declare type PersianDatePickerState = {

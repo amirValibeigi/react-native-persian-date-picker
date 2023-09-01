@@ -13,11 +13,14 @@ import {
   mixDisabledDate,
   safeParseDate,
 } from '../libs/Utils';
-import { FORMAT_ENGLISH, PERSIAN } from 'react-native-persian-date-picker';
+import { FORMAT_ENGLISH, FORMAT_PERSIAN } from '../libs/Format';
+import { PERSIAN } from '../libs/Locales';
 import { type CalendarType, type DayType } from '../types/types';
 import DayItemView from './items/DayItemView';
+import type { SelectYearMonthViewAccess } from './SelectYearMonthView/index.types';
 
 export function useUI(props: PersianDatePickerProps) {
+  const refSelectYearMonth = React.useRef<SelectYearMonthViewAccess>(null);
   const [state, setState] = React.useState<PersianDatePickerState>({
     isPersian: (props.locale ?? PERSIAN).type === 'fa',
     selectedDays: [],
@@ -36,24 +39,61 @@ export function useUI(props: PersianDatePickerProps) {
     ),
   });
 
+  const onPressYearMonth = React.useCallback(() => {
+    refSelectYearMonth.current?.show();
+  }, []);
+
+  const onChangeDate = React.useCallback((date: moment.MomentInput) => {
+    setState((pv) => ({ ...pv, userDate: moment(date) }));
+  }, []);
+
   const onPressChangeMonth = React.useCallback(
-    (isNext: boolean) => {
+    (isNext: boolean | number, month?: number, isPersian?: boolean) => {
       setState((pv) => {
         const userDate = moment(pv.userDate);
 
-        if ((pv?.isPersian && isNext) || (!pv?.isPersian && !isNext)) {
-          userDate.add('month', 1);
+        if (typeof isNext !== 'boolean') {
+          const [currentYear, currentMonth] = userDate
+            .format(isPersian ? FORMAT_PERSIAN : FORMAT_ENGLISH)
+            .split('-')
+            .map((v) => Number(v));
+
+          if (
+            !isNext ||
+            !month ||
+            !currentYear ||
+            !currentMonth ||
+            (currentYear === isNext && currentMonth === month)
+          ) {
+            return pv;
+          }
+
+          userDate.add(
+            'month',
+            isNext! * 12 +
+              (currentYear >= isNext
+                ? currentYear - isNext
+                : (currentYear - isNext) * -1) +
+              month -
+              (currentYear! * 12 + currentMonth)
+          );
         } else {
-          userDate.add('month', -1);
+          if ((pv?.isPersian && isNext) || (!pv?.isPersian && !isNext)) {
+            userDate.add('month', 1);
+          } else {
+            userDate.add('month', -1);
+          }
         }
 
-        const { locale } = props;
+        const { locale, outputDateFormat, onChangeYearMonth } = props;
         const _days = fillDays(
           locale ?? PERSIAN,
           userDate,
           mixDisabledDate(props),
           pv.days as any
         );
+
+        onChangeYearMonth?.(userDate.format(outputDateFormat));
 
         return { ...pv, userDate, days: _days };
       });
@@ -153,7 +193,15 @@ export function useUI(props: PersianDatePickerProps) {
     onPressDay,
   ]);
 
-  return { ...state, ...onPressList, renderDayFunc };
+  return {
+    ...state,
+    ...onPressList,
+    refSelectYearMonth,
+    renderDayFunc,
+    onPressChangeMonth,
+    onPressYearMonth,
+    onChangeDate,
+  };
 }
 
 const renderDayItemView = (

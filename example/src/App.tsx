@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { SafeAreaView } from 'react-native';
-import PersianDatePicker from 'react-native-persian-date-picker';
+import PersianDatePicker, { ENGLISH } from 'react-native-persian-date-picker';
 
 export default function App() {
   return (
@@ -10,7 +10,16 @@ export default function App() {
         size="s"
         type="multi"
         outputDateFormat="jYYYY-jMM-jDD"
-        onPressDay={(dates) => console.log('change', dates)}
+        onPressDay={(dates) => console.log('onPressDay', dates)}
+        onChangeYearMonth={(date) => console.log('changeYearMonth', date)}
+      />
+      <PersianDatePicker
+        size="s"
+        type="multi"
+        locale={ENGLISH}
+        outputDateFormat="YYYY-MM-DD"
+        onPressDay={(dates) => console.log('EN:onPressDay', dates)}
+        onChangeYearMonth={(date) => console.log('EN:changeYearMonth', date)}
       />
     </SafeAreaView>
   );
