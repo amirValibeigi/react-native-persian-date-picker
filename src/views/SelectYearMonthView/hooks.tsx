@@ -6,6 +6,12 @@ import type { SelectYearMonthViewAccess } from './index.types';
 import type { MonthType } from '../../types/types';
 import moment from 'jalali-moment';
 import SelectYearMonthItemView from '../items/SelectYearMonthItemView';
+import type {
+  FlatList,
+  LayoutChangeEvent,
+  ViewabilityConfigCallbackPairs,
+  ViewToken,
+} from 'react-native';
 
 export function useUI({
   isPersian,
@@ -28,20 +34,21 @@ export function useUI({
 }) {
   const [currentUserDate, setCurrentUserDate] = React.useState<
     Moment | undefined
-  >(userDate);
+  >(undefined);
   const [isYear, setIsYear] = React.useState(true);
 
   const [year, month] = React.useMemo(() => {
     const ym = formatDate(userDate, isPersian);
 
-    return [ym[0], locale.nameMonth[ym[1] ?? 11]];
+    return [ym[0], locale.nameMonth[(ym[1] ?? 12) - 1]];
   }, [isPersian, locale.nameMonth, userDate]);
 
-  const [currentUserYear, currentUserMonth] = React.useMemo(() => {
-    const ym = formatDate(currentUserDate, isPersian);
+  const [currentUserYear, currentUserMonth, currentUserNameMonth] =
+    React.useMemo(() => {
+      const ym = formatDate(currentUserDate, isPersian);
 
-    return [ym[0], ym[1] ?? 11];
-  }, [isPersian, currentUserDate]);
+      return [ym[0], ym[1] ?? 12, locale.nameMonth[(ym[1] ?? 12) - 1]];
+    }, [currentUserDate, isPersian, locale.nameMonth]);
 
   React.useImperativeHandle(
     ref,
@@ -58,9 +65,34 @@ export function useUI({
   }, []);
 
   const onPressSubmit = React.useCallback(() => {
-    onChange?.(userDate);
+    if (currentUserDate) {
+      onChange?.(currentUserDate);
+    }
     onPressCancel();
-  }, [onChange, onPressCancel, userDate]);
+  }, [onChange, onPressCancel, currentUserDate]);
+
+  const onPressYearMonthItem = React.useCallback(
+    (item: string | number | MonthType) => {
+      setCurrentUserDate((pv) => {
+        if (typeof item === 'number' || typeof item === 'string') {
+          if (isPersian) {
+            pv?.jYear(Number(item));
+          } else {
+            pv?.year(Number(item));
+          }
+        } else {
+          if (isPersian) {
+            pv?.jMonth(Number(item.monthNumber ?? 12) - 1);
+          } else {
+            pv?.month(Number(item.monthNumber ?? 12) - 1);
+          }
+        }
+
+        return moment(pv);
+      });
+    },
+    [isPersian]
+  );
 
   const listOnPress = React.useMemo(
     () => ({
@@ -71,7 +103,7 @@ export function useUI({
   );
 
   const data = useData({
-    userDate: currentUserDate,
+    userDate,
     minDate,
     maxDate,
     locale,
@@ -84,8 +116,9 @@ export function useUI({
     () =>
       SelectYearMonthItemView.bind(null, {
         selected: isYear ? currentUserYear : currentUserMonth,
+        onPress: onPressYearMonthItem,
       }),
-    [currentUserMonth, currentUserYear, isYear]
+    [currentUserMonth, currentUserYear, isYear, onPressYearMonthItem]
   );
 
   return {
@@ -95,6 +128,8 @@ export function useUI({
     isYear,
     month,
     year,
+    currentUserYear,
+    currentUserNameMonth,
     onPressCancel,
     onPressSubmit,
     renderItem,
@@ -119,18 +154,31 @@ export function useData({
   isYear?: boolean;
   maxCountYear?: number;
 }) {
-  return React.useMemo(() => {
+  const refShow = React.useRef<{
+    data: Array<string | number | MonthType>;
+    currentUserMonth?: number;
+    currentUserYear?: number;
+    isYear: boolean;
+  }>({
+    data: [],
+    isYear: true,
+  });
+  const data = React.useMemo(() => {
     if (!userDate) {
       return [];
     }
 
     const vMaxCountYear = maxCountYear ?? 100;
-    const [year] = formatDate(userDate, isPersian);
+    const [year, month] = formatDate(userDate, isPersian);
     let [minYear, minMonth] = formatDate(minDate, isPersian);
     let [maxYear, maxMonth] = formatDate(maxDate, isPersian);
 
     minYear ??= (year ?? vMaxCountYear) - vMaxCountYear;
     maxYear ??= (year ?? vMaxCountYear) + vMaxCountYear;
+
+    refShow.current.isYear = isYear ?? true;
+    refShow.current.currentUserYear = year ?? 1;
+    refShow.current.currentUserMonth = month ?? 1;
 
     const vData: Array<number> = [];
 
@@ -138,6 +186,7 @@ export function useData({
       for (let y = maxYear!; y >= minYear!; y--) {
         vData.push(y);
       }
+      refShow.current.data = vData;
       return vData;
     }
 
@@ -160,8 +209,72 @@ export function useData({
         });
     }
 
+    refShow.current.data = months;
     return months;
   }, [isPersian, isYear, locale, maxCountYear, maxDate, minDate, userDate]);
+
+  const refList = React.useRef<FlatList>(null);
+
+  const onViewableItemsChanged = React.useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (
+        refShow.current.data.length === 0 ||
+        !viewableItems?.[0]?.isViewable
+      ) {
+        return;
+      }
+
+      const tmpData = refShow.current.data;
+      const indexItem = refShow.current.isYear
+        ? tmpData.findIndex((el) => el === refShow.current.currentUserYear)
+        : tmpData.findIndex(
+            (el) =>
+              (el as MonthType).monthNumber === refShow.current.currentUserMonth
+          );
+      refShow.current.data = [];
+
+      if (indexItem >= 0) {
+        refList.current?.scrollToItem({
+          item: tmpData[indexItem],
+          animated: true,
+        });
+      }
+    },
+    []
+  );
+
+  const refViewabilityConfigCallbackPair =
+    React.useRef<ViewabilityConfigCallbackPairs>([
+      {
+        viewabilityConfig: { itemVisiblePercentThreshold: 70 },
+        onViewableItemsChanged,
+      },
+    ]);
+
+  const [width, setWidth] = React.useState(0);
+
+  const onLayout = React.useCallback((e: LayoutChangeEvent) => {
+    if (e.nativeEvent?.layout?.width > 0) {
+      setWidth(e.nativeEvent?.layout?.height);
+    }
+  }, []);
+
+  const getItemLayout = React.useCallback(
+    (_, index: number) => ({
+      length: width,
+      offset: width * index - index * 4,
+      index,
+    }),
+    [width]
+  );
+
+  return {
+    data,
+    refList,
+    refViewabilityConfigCallbackPair,
+    onLayout,
+    getItemLayout,
+  };
 }
 
 function formatDate(date: MomentInput, isPersian?: boolean) {

@@ -4,6 +4,7 @@ import React from 'react';
 
 export declare type SelectYearMonthItemViewProp = {
   item: string | number | MonthType;
+  index: number;
   onPress?: (item: string | MonthType) => void;
 };
 
@@ -25,6 +26,15 @@ const YearItemView = React.memo(
       >
         {item}
       </MaterialButton>
+    );
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.onPress === nextProps.onPress &&
+      prevProps.item === nextProps.item &&
+      (prevProps.item === prevProps.selected
+        ? nextProps.item === nextProps.selected
+        : nextProps.item !== nextProps.selected)
     );
   }
 );

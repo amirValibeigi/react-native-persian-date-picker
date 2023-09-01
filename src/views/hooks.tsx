@@ -43,9 +43,24 @@ export function useUI(props: PersianDatePickerProps) {
     refSelectYearMonth.current?.show();
   }, []);
 
-  const onChangeDate = React.useCallback((date: moment.MomentInput) => {
-    setState((pv) => ({ ...pv, userDate: moment(date) }));
-  }, []);
+  const onChangeDate = React.useCallback(
+    (date: moment.MomentInput) => {
+      setState((pv) => {
+        const nextDate = moment(date);
+        const { locale, outputDateFormat, onChangeYearMonth } = props;
+        const _days = fillDays(
+          locale ?? PERSIAN,
+          nextDate,
+          mixDisabledDate(props),
+          pv.days as any
+        );
+
+        onChangeYearMonth?.(nextDate.format(outputDateFormat));
+        return { ...pv, userDate: nextDate, days: _days };
+      });
+    },
+    [props]
+  );
 
   const onPressChangeMonth = React.useCallback(
     (isNext: boolean | number, month?: number, isPersian?: boolean) => {

@@ -2,12 +2,13 @@ import React from 'react';
 import {
   type StyleProp,
   Text,
+  type TextProps,
   type TextStyle,
   TouchableOpacity,
 } from 'react-native';
 import { styles } from './SelectYearMonthView/styles';
 
-export declare type MaterialButtonProp = {
+export declare type MaterialButtonProp = TextProps & {
   children?: string | number;
   onPress?: () => void;
   selected?: boolean;
@@ -15,7 +16,13 @@ export declare type MaterialButtonProp = {
 };
 
 const MaterialButton = React.memo(
-  ({ children, onPress, selected, styleTitle }: MaterialButtonProp) => {
+  ({
+    children,
+    onPress,
+    selected,
+    styleTitle,
+    ...props
+  }: MaterialButtonProp) => {
     return (
       <TouchableOpacity
         style={[styles.btn, selected && styles.btnSelected]}
@@ -23,6 +30,7 @@ const MaterialButton = React.memo(
       >
         <Text
           style={[styles.text, selected && styles.textSelected, styleTitle]}
+          {...props}
         >
           {children}
         </Text>

@@ -11,26 +11,30 @@ import MaterialButton from '../MaterialButton';
 
 const SelectYearMonthView = React.memo(
   React.forwardRef<SelectYearMonthViewAccess, SelectYearMonthViewProps>(
-    ({ userDate, locale, isPersian, maxDate, maxCountYear, minDate }, ref) => {
+    (
+      { userDate, locale, isPersian, maxDate, maxCountYear, minDate, onChange },
+      ref
+    ) => {
       const {
+        data,
         isShow,
         isYear,
-        year,
-        month,
-        data,
+        currentUserYear,
+        currentUserNameMonth,
         renderItem,
-        onPressYear,
+        onPressCancel,
         onPressMonth,
         onPressSubmit,
-        onPressCancel,
+        onPressYear,
       } = useUI({
-        userDate,
-        locale,
         isPersian,
-        ref,
+        locale,
+        maxCountYear,
         maxDate,
         minDate,
-        maxCountYear,
+        ref,
+        userDate,
+        onChange,
       });
 
       if (!isShow) {
@@ -41,17 +45,27 @@ const SelectYearMonthView = React.memo(
         <View style={styles.container}>
           <View style={GlobalStyles.row}>
             <MaterialButton selected={isYear} onPress={onPressYear}>
-              {year}
+              {currentUserYear}
             </MaterialButton>
-            <MaterialButton selected={!isYear} onPress={onPressMonth}>
-              {month}
+            <MaterialButton
+              selected={!isYear}
+              onPress={onPressMonth}
+              onLayout={data.onLayout}
+            >
+              {currentUserNameMonth}
             </MaterialButton>
           </View>
           <FlatList
+            ref={data.refList}
             style={GlobalStyles.fillParent}
-            data={data}
+            data={data.data}
             renderItem={renderItem}
             numColumns={2}
+            viewabilityConfigCallbackPairs={
+              data.refViewabilityConfigCallbackPair.current
+            }
+            getItemLayout={data.getItemLayout}
+            maxToRenderPerBatch={Math.min(maxCountYear ?? 40, 100)}
           />
           <View style={GlobalStyles.row}>
             <MaterialButton
