@@ -1,10 +1,13 @@
 import type { MonthType } from '../../types/types';
 import MaterialButton from '../MaterialButton';
 import React from 'react';
+import { type Locale, PERSIAN } from '../../libs/Locales';
+import { formatNumber } from '../../libs/Utils';
 
 export declare type SelectYearMonthItemViewProp = {
   item: string | number | MonthType;
   index: number;
+  locale?: Locale;
   onPress?: (item: string | MonthType) => void;
 };
 
@@ -16,15 +19,18 @@ const YearItemView = React.memo(
   ({
     selected,
     item,
+    locale,
     onPress,
   }: SelectYearMonthItemViewProp &
     SelectYearMonthItemViewAccess & { item: string }) => {
+    const vLocale = React.useMemo(() => locale ?? PERSIAN, [locale]);
+
     return (
       <MaterialButton
         selected={selected === item}
         onPress={onPress?.bind(null, item)}
       >
-        {item}
+        {formatNumber(item, vLocale)}
       </MaterialButton>
     );
   },

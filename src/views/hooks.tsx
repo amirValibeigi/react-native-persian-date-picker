@@ -47,12 +47,21 @@ export function useUI(props: PersianDatePickerProps) {
     (date: moment.MomentInput) => {
       setState((pv) => {
         const nextDate = moment(date);
-        const { locale, outputDateFormat, onChangeYearMonth } = props;
+        const {
+          locale,
+          days,
+          inputDateFormat,
+          outputDateFormat,
+          onChangeYearMonth,
+        } = props;
         const _days = fillDays(
           locale ?? PERSIAN,
           nextDate,
           mixDisabledDate(props),
-          pv.days as any
+          days?.map((d) => ({
+            ...d,
+            date: safeParseDate(d.date, inputDateFormat ?? FORMAT_ENGLISH),
+          })) ?? ([] as any)
         );
 
         onChangeYearMonth?.(nextDate.format(outputDateFormat));
@@ -100,12 +109,21 @@ export function useUI(props: PersianDatePickerProps) {
           }
         }
 
-        const { locale, outputDateFormat, onChangeYearMonth } = props;
+        const {
+          days,
+          locale,
+          inputDateFormat,
+          outputDateFormat,
+          onChangeYearMonth,
+        } = props;
         const _days = fillDays(
           locale ?? PERSIAN,
           userDate,
           mixDisabledDate(props),
-          pv.days as any
+          days?.map((d) => ({
+            ...d,
+            date: safeParseDate(d.date, inputDateFormat ?? FORMAT_ENGLISH),
+          })) as any
         );
 
         onChangeYearMonth?.(userDate.format(outputDateFormat));
@@ -207,6 +225,27 @@ export function useUI(props: PersianDatePickerProps) {
     props.locale,
     onPressDay,
   ]);
+
+  React.useEffect(() => {
+    setState((pv) => ({
+      ...pv,
+      isPersian: (props.locale ?? PERSIAN).type === 'fa',
+      selectedDays: [],
+      userDate: safeParseDate(
+        props.date,
+        props.inputDateFormat ?? FORMAT_ENGLISH
+      ),
+      days: fillDays(
+        props.locale ?? PERSIAN,
+        safeParseDate(props.date, props.inputDateFormat ?? FORMAT_ENGLISH),
+        mixDisabledDate(props),
+        props.days?.map((d) => ({
+          ...d,
+          date: safeParseDate(d.date, props.inputDateFormat ?? FORMAT_ENGLISH),
+        })) ?? []
+      ),
+    }));
+  }, [props]);
 
   return {
     ...state,

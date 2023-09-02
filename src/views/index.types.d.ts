@@ -1,13 +1,13 @@
 import { CalendarType, DayType, SizeType } from '../types/types';
 import { Locale } from '../libs/Locales';
-import { StyleDayItem } from './items/DayItemView';
-import { ViewStyle } from 'react-native';
+import { StyleDayItem } from './items/DayItemView/index.types';
+import { StyleProp, ViewStyle } from 'react-native';
 import React from 'react';
 import {
   RenderNextMonth,
   RenderPreviousMonth,
   StyleYearMonth,
-} from './YearMonthView';
+} from './YearMonthView/index.types';
 import { StyleWeek } from './WeekView';
 import { RenderDescription, StyleDescription } from './DescriptionView';
 import type { Moment, MomentInput } from 'jalali-moment';
@@ -17,7 +17,7 @@ export declare type RenderDay = (
 ) => React.JSX.Element;
 
 export declare type PersianDatePickerProps = {
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   styleYearMonth?: StyleYearMonth;
   styleWeek?: StyleWeek;
   styleDay?: StyleDayItem;
@@ -99,7 +99,7 @@ export declare type PersianDatePickerProps = {
 
    *
    */
-  days?: Array<DayType>;
+  days?: Array<Omit<DayType, 'day' | 'isToday' | 'isDisabled'>>;
 
   /**
    * input date format:

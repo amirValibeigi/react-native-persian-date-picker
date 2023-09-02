@@ -9,12 +9,14 @@ import { type Locale, PERSIAN } from '../libs/Locales';
 import WeekItemView from './items/WeekItemView';
 import { styles } from '../styles';
 
+export declare type StyleWeek = {
+  item?: StyleProp<TextStyle>;
+  itemOffDay?: StyleProp<TextStyle>;
+  container?: StyleProp<ViewStyle>;
+};
+
 export declare type WeekViewType = {
-  style?: {
-    item?: StyleProp<TextStyle>;
-    itemOffDay?: StyleProp<TextStyle>;
-    container?: StyleProp<ViewStyle>;
-  };
+  style?: StyleWeek;
   locale?: Locale;
   isPersian: boolean;
 };

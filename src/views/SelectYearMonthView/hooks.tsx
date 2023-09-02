@@ -116,9 +116,10 @@ export function useUI({
     () =>
       SelectYearMonthItemView.bind(null, {
         selected: isYear ? currentUserYear : currentUserMonth,
+        locale,
         onPress: onPressYearMonthItem,
       }),
-    [currentUserMonth, currentUserYear, isYear, onPressYearMonthItem]
+    [currentUserMonth, currentUserYear, isYear, locale, onPressYearMonthItem]
   );
 
   return {

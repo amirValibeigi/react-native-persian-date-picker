@@ -69,8 +69,8 @@ export function getDescriptionSelectedDays(
 ) {
   const _SDays = getSelectedDays(selectedDays, userDate, isPersian);
 
-  return days?.filter((v) =>
-    _SDays.includes(moment(v.date).format(FORMAT_ENGLISH))
+  return days?.filter(
+    (v) => v.date && _SDays.includes(moment(v.date).format(FORMAT_ENGLISH))
   );
 }
 
@@ -114,7 +114,7 @@ export function fillDays(
     )
     ?.map((v) =>
       typeof v.date !== 'number'
-        ? { ...v, date: getSplitDate(isPersian, v.date)[2] }
+        ? { ...v, day: getSplitDate(isPersian, v.date)[2] }
         : v
     );
 
@@ -125,12 +125,13 @@ export function fillDays(
     ...[...Array(start).keys()].map(() => ''),
     ...[...Array(max).keys()].map((item, index) => {
       const v = item + 1;
-      const tmp = _days?.filter((tmpDay) => tmpDay.date === v)?.[0];
+      const tmp = _days?.filter((tmpDay) => tmpDay.day === v)?.[0];
       const _tmpDate = isPersian ? _UserDate.jDate(v) : _UserDate.date(v);
       const _tmpFDate = _tmpDate.format(FORMAT_ENGLISH);
 
       return {
         day: v,
+        date: tmp?.date,
         isToday: isThisMonth && v === today,
         isOffDay:
           tmp?.isOffDay ||

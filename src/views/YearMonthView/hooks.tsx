@@ -98,8 +98,7 @@ export function useUI({
       //TODO: fix bug loop change
       onChangeDebounce(viewableItems[0]);
     },
-    // eslint-disable-next-line
-    []
+    [onChangeDebounce]
   );
 
   const refViewabilityConfigCallbackPairs =
@@ -117,10 +116,11 @@ export function useUI({
     () =>
       YearItemView.bind(null, {
         style: style?.title,
+        locale,
         width,
         onPress,
       }),
-    [onPress, style?.title, width]
+    [locale, onPress, style?.title, width]
   );
 
   React.useEffect(makeData, [makeData]);

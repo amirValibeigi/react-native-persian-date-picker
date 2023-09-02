@@ -8,6 +8,8 @@ import type {
 } from './index.types';
 import { useUI } from './hooks';
 import MaterialButton from '../MaterialButton';
+import { PERSIAN } from '../../libs/Locales';
+import { formatNumber } from '../../libs/Utils';
 
 const SelectYearMonthView = React.memo(
   React.forwardRef<SelectYearMonthViewAccess, SelectYearMonthViewProps>(
@@ -37,6 +39,8 @@ const SelectYearMonthView = React.memo(
         onChange,
       });
 
+      const vLocale = React.useMemo(() => locale ?? PERSIAN, [locale]);
+
       if (!isShow) {
         return <></>;
       }
@@ -45,7 +49,7 @@ const SelectYearMonthView = React.memo(
         <View style={styles.container}>
           <View style={GlobalStyles.row}>
             <MaterialButton selected={isYear} onPress={onPressYear}>
-              {currentUserYear}
+              {formatNumber(currentUserYear, vLocale)}
             </MaterialButton>
             <MaterialButton
               selected={!isYear}
