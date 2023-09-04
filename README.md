@@ -1,4 +1,20 @@
 # React Native Persian Date Picker
+[![Version](https://img.shields.io/npm/v/@rhv79/react-native-persian-date-picker.svg)](https://amirvalibeigi.github.io/react-native-persian-date-picker)
+
+[Docs En](https://amirvalibeigi.github.io/?/react-native-persian-date-picker?lng=en)
+
+[Docs Fa](https://amirvalibeigi.github.io/?/react-native-persian-date-picker?lng=fa)
+
+
+| platform     | support |
+|--------------|---------|
+| android      | ✅       |
+| expo         | ✅       |
+| ios          | ✅       |
+| react-native | ✅       |
+| web          | ✅       |
+
+---
 
 ## Install
 
@@ -18,7 +34,7 @@ import PersianDatePicker from "@rhv79/react-native-persian-date-picker";
 
 ### custom style
 
-![Alt text](screenshots/normal.png?raw=false "normal and dark")
+![custom style, normal and dark](screenshots/normal.png?raw=false "custom style, normal and dark")
 
 ```javascript
 import PersianDatePicker from "@rhv79/react-native-persian-date-picker";
@@ -80,7 +96,7 @@ const maxDisableDate = "1401-01-20";
 
 ### type: calendar or one
 
-![Alt text](screenshots/selectOne.png?raw=false "normal and dark")
+![one, normal and dark](screenshots/selectOne.png?raw=false "one, normal and dark")
 
 ```javascript
 <View>
@@ -97,7 +113,7 @@ const maxDisableDate = "1401-01-20";
 </View>
 ```
 
-```bash
+```
 output: ["2022-03-28T00:00:00+04:30"]
 ```
 
@@ -105,7 +121,7 @@ output: ["2022-03-28T00:00:00+04:30"]
 
 ### type: range
 
-![Alt text](screenshots/selectRange.png?raw=false "normal and dark")
+![range, normal and dark](screenshots/selectRange.png?raw=false "range, normal and dark")
 
 ```javascript
 <View>
@@ -123,7 +139,7 @@ output: ["2022-03-28T00:00:00+04:30"]
 </View>
 ```
 
-```bash
+```
 output: ["1401-01-08", "1401-01-18"]
 ```
 
@@ -131,7 +147,7 @@ output: ["1401-01-08", "1401-01-18"]
 
 ### locales
 
-![Alt text](screenshots/locales.png?raw=false "normal and dark")
+![locales, normal and dark](screenshots/locales.png?raw=false "locales, normal and dark")
 
 ```javascript
 import PersianDatePicker, {
@@ -164,14 +180,14 @@ import PersianDatePicker, {
 
 ### custom locales
 
-![Alt text](screenshots/customLocal.png?raw=false "normal and dark")
+![custom locales, normal and dark](screenshots/customLocal.png?raw=false "custom locales,normal and dark")
 
 ```javascript
 import PersianDatePicker, {
   PERSIAN,
 } from "@rhv79/react-native-persian-date-picker";
 
-const customLocal = {
+const customLocale = {
   ...PERSIAN,
   nameDaysOfWeek: ["😥", "😑", "😐", "🤐", "🙄", "🤩", "😍"],
   nameMonth: ["🤑"], //فروردین
@@ -184,115 +200,24 @@ const customLocal = {
   maxDate={maxDisableDate}
   disabledDate={disableDate}
   size="m"
-/>;
-
-<PersianDatePicker
-  type="range"
-  inputDateFormat="jYYYY-jMM-jDD"
-  days={days}
-  minDate={minDisableDate}
-  maxDate={maxDisableDate}
-  disabledDate={disableDate}
-  size="m"
+  locale={customLocale}
 />;
 ```
 
----
+### Year and Month Picker
 
-## props
+![year picker](screenshots/yearPicker.png?raw=false "year picker")
 
-| prop                | type                              |
-|---------------------|-----------------------------------|
-| date                | String \| Number \| Date          |
-| days                | Array\<DayType\>                  |
-| disabledDate        | Array\<String \| Number \| Date\> |
-| inputDateFormat     | String                            |
-| locale              | Locale                            |
-| maxDate             | String                            |
-| minDate             | String                            |
-| onPressDay          | (dates:Array\<String\>)=>void     |
-| outputDateFormat    | String                            |
-| renderDay           | RenderDay                         |
-| renderDescription   | RenderDescription                 |
-| renderNextMonth     | RenderNextMonth                   |
-| renderPreviousMonth | RenderPreviousMonth               |
-| showDescription     | Boolean                           |
-| size                | SizeType                          |
-| style               | ViewStyle                         |
-| styleDay            | StyleDayItem                      |
-| styleDescription    | StyleDescription                  |
-| styleWeek           | StyleWeek                         |
-| styleYearMonth      | StyleYearMonth                    |
-| type                | CalendarType                      |
+![month picker](screenshots/monthPicker.png?raw=false "month picker")
 
-### CalendarType
 
-"calendar" | "range" | "one" | "multi"
+```javascript
+<PersianDatePicker
+  size="m"
+  onChangeYearMonth={(date) => console.log('changeYearMonth', date)}
+/>;
+```
 
-### DateType
-
-Date | String | Number | Object
-
-### SizeType
-
-"s" | "m" | "f"
-
-- s: small
-- m: medium
-- f: full flex=1
-
-### DayType
-
-| prop         | type     |
-| ------------ | -------- |
-| date?        | DateType |
-| isOffDay?    | Boolean  |
-| isToday?     | Boolean  |
-| description? | String   |
-
-### Locale
-
-| prop           | type           |
-| -------------- | -------------- |
-| dayOffOfWeek   | Number         |
-| daysOfWeek     | Array\<String> |
-| nameDaysOfWeek | Array\<String> |
-| nameMonth      | Array\<String> |
-| type           | String         |
-
-### RenderDay
-
-| prop             | type                           |
-| ---------------- | ------------------------------ |
-| item             | DayType                        |
-| index            | Number                         |
-| type             | CalendarType                   |
-| locale           | Locale                         |
-| isPersian        | Boolean                        |
-| isSelected       | Boolean                        |
-| isSelectedFirst  | Boolean                        |
-| isSelectedLast   | Boolean                        |
-| isSelectedMiddle | Boolean                        |
-| style?           | StyleDayItem                   |
-| onPress          | (day: Array\<DayType>) => void |
-
-### StyleDayItem
-
-| prop                   | type      |
-| ---------------------- | --------- |
-| container?             | ViewStyle |
-| containerIsToday?      | ViewStyle |
-| containerIsSelected?   | ViewStyle |
-| containerIsDisabled?   | ViewStyle |
-| containerSelectStart?  | ViewStyle |
-| containerSelectEnd?    | ViewStyle |
-| containerSelectMiddle? | ViewStyle |
-| title?                 | TextStyle |
-| titleIsToday?          | TextStyle |
-| titleIsSelected?       | TextStyle |
-| titleIsSelectedMiddle? | TextStyle |
-| titleIsOffDay?         | TextStyle |
-| titleIsPersian?        | TextStyle |
-| occasion?              | TextStyle |
-| occasionIsOffDay?      | TextStyle |
-| occasionDescription?   | TextStyle |
+```
+output: changeYearMonth 2023-09-04T10:45:35+04:30
+```

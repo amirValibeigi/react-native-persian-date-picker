@@ -1,7 +1,9 @@
 import * as React from 'react';
 
 import { SafeAreaView } from 'react-native';
-import PersianDatePicker, { ENGLISH } from 'react-native-persian-date-picker';
+import PersianDatePicker, {
+  ENGLISH,
+} from '@rhv79/react-native-persian-date-picker';
 
 export default function App() {
   return (

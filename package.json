@@ -39,14 +39,16 @@
     "bootstrap": "yarn example && yarn install"
   },
   "keywords": [
-    "react-native",
-    "ios",
     "android",
     "date picker",
     "date",
+    "expo",
+    "ios",
     "persian date picker",
     "persian",
-    "react-native"
+    "react-native",
+    "react-native",
+    "react-native-web"
   ],
   "repository": "https://github.com/amirValibeigi/react-native-persian-date-picker",
   "author": "Amir Valibeigi <amir.av79@gmail.com> (https://github.com/amirValibeigi)",
